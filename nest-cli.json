@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/tanager/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/tanager/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/tanager",
+  "projects": {
+    "tanager": {
+      "type": "application",
+      "root": "apps/tanager",
+      "entryFile": "main",
+      "sourceRoot": "apps/tanager/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/tanager/tsconfig.app.json"
+      }
+    },
+    "inbound": {
+      "type": "application",
+      "root": "apps/inbound",
+      "entryFile": "main",
+      "sourceRoot": "apps/inbound/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/inbound/tsconfig.app.json"
+      }
+    }
+  }
+}
