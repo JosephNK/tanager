@@ -18,12 +18,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/common": [
-        "libs/common/src"
-      ],
-      "@app/common/*": [
-        "libs/common/src/*"
-      ],
+      "@app/commons": ["libs/commons/src"],
+      "@app/commons/*": ["libs/commons/src/*"],
+      "@app/exceptions": ["libs/exceptions/src"],
+      "@app/exceptions/*": ["libs/exceptions/src/*"]
     }
   }
 }

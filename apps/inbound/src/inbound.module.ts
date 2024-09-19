@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { InboundController } from './inbound.controller';
+import { InboundFirebaseController } from './inbound.firebase.controller';
 import { InboundService } from './inbound.service';
-import { validate } from '@app/common';
+import { InboundFirebaseService } from './inbound.firebase.service';
+import { validate } from './env.validation';
 
 @Module({
   imports: [
@@ -12,7 +14,7 @@ import { validate } from '@app/common';
       validate,
     }),
   ],
-  controllers: [InboundController],
-  providers: [InboundService],
+  controllers: [InboundController, InboundFirebaseController],
+  providers: [InboundService, InboundFirebaseService],
 })
-export class InboundModule { }
+export class InboundModule {}

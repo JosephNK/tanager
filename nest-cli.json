@@ -28,13 +28,22 @@
         "tsConfigPath": "apps/inbound/tsconfig.app.json"
       }
     },
-    "common": {
+    "commons": {
       "type": "library",
-      "root": "libs/common",
+      "root": "libs/commons",
       "entryFile": "index",
-      "sourceRoot": "libs/common/src",
+      "sourceRoot": "libs/commons/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/common/tsconfig.lib.json"
+        "tsConfigPath": "libs/commons/tsconfig.lib.json"
+      }
+    },
+    "exceptions": {
+      "type": "library",
+      "root": "libs/exceptions",
+      "entryFile": "index",
+      "sourceRoot": "libs/exceptions/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/exceptions/tsconfig.lib.json"
       }
     }
   }
