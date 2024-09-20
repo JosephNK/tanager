@@ -1,10 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import {
-  InboundRegisterInputPortDto,
-  InboundUnregisterInputPortDto,
-  InboundSendMessageInputPortDto,
-  InboundFindTokenInputPortDto,
-} from './inbound.input.port';
+import { SendMessageInputPortDto } from '@app/commons';
 import * as admin from 'firebase-admin';
 import { readFile } from 'fs/promises';
 import { UserNotFoundException } from '@app/exceptions';
@@ -12,10 +7,10 @@ import { UserNotFoundException } from '@app/exceptions';
 /// Service
 @Injectable()
 export class InboundFirebaseService {
-  async sendMessage(dto: InboundSendMessageInputPortDto): Promise<string> {
+  async sendMessage(dto: SendMessageInputPortDto): Promise<string> {
     try {
-      let filePath = `../${process.env.FIREBASE_SERVICE_KEY_FILE}`;
-      let data = await readFile(filePath, 'utf8');
+      const filePath = `../${process.env.FIREBASE_SERVICE_KEY_FILE}`;
+      const data = await readFile(filePath, 'utf8');
       console.log(data);
       return `Hello World!! ${data}`;
     } catch (error) {

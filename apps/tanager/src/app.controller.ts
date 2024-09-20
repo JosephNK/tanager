@@ -1,20 +1,30 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
+import {
+  RegisterInputPortDto,
+  // UnregisterInputPortDto,
+  // SendMessageInputPortDto,
+  // FindTokenInputPortDto,
+} from '@app/commons';
 import { AppService } from './app.service';
 import { lastValueFrom } from 'rxjs';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) { }
+  constructor(private readonly appService: AppService) {}
 
   // @Get()
-  // getHello(): string {
-  //   return this.appService.getHello();
+  // async resigter(): Promise<string> {
+  //   console.log('getHello1');
+  //   const helloValue = await this.appService.resigter();
+  //   return lastValueFrom(helloValue);
   // }
 
-  @Get()
-  async getHello1(): Promise<string> {
-    console.log('getHello1')
-    const helloValue = await this.appService.getHello1();
-    return lastValueFrom(helloValue);
+  // RESTful
+
+  @Post('register')
+  async register(@Body() dto: RegisterInputPortDto): Promise<string> {
+    const helloValue = this.appService.register(dto);
+    const result = await lastValueFrom(helloValue);
+    return result;
   }
 }

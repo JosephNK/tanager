@@ -1,37 +1,29 @@
 import { Injectable } from '@nestjs/common';
+import { RegisterInputPortDto } from '@app/commons';
 import {
   ClientProxyFactory,
   Transport,
   ClientProxy,
 } from '@nestjs/microservices';
-import { lastValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AppService {
   private client: ClientProxy;
 
   constructor() {
+    console.log('constructor');
     this.client = ClientProxyFactory.create({
       transport: Transport.TCP,
       options: {
-        port: 4000,
+        host: 'localhost',
+        port: 8877,
       },
     });
   }
 
-  getHello(): string {
-    return `Hello World! ${process.env.NODE_ENV}`;
+  register(dto: RegisterInputPortDto): Observable<string> {
+    console.log('asdas');
+    return this.client.send<string>({ cmd: 'register' }, dto);
   }
-
-  getHello1(): Observable<string> {
-    // return this.client.send<string, string>('getHello1', 'Michael').toPromise();
-    console.log('asdas')
-    return this.client.send<string, string>('getHello1', 'Michael');
-  }
-
-  // getHello1() {
-  //   // return this.client.send<string, string>('getHello1', 'Michael').toPromise();
-  //   console.log('asdas')
-  //   return this.client.emit('getHello1', 'Michael')
-  // }
 }

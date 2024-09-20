@@ -1,12 +1,11 @@
 import { Controller, Body, Get, Post, Query } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { InboundService } from './inbound.service';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import {
-  InboundRegisterInputPortDto,
-  InboundUnregisterInputPortDto,
-  InboundSendMessageInputPortDto,
-  InboundFindTokenInputPortDto,
-} from './inbound.input.port';
+  RegisterInputPortDto,
+  UnregisterInputPortDto,
+  FindTokenInputPortDto,
+} from '@app/commons';
 
 /// Adapter
 @Controller()
@@ -16,40 +15,35 @@ export class InboundController {
   // RESTful
 
   @Post('register')
-  register(@Body() dto: InboundRegisterInputPortDto): string {
+  register(@Body() dto: RegisterInputPortDto): string {
+    console.log('register');
     return this.service.register(dto);
   }
 
   @Post('unregister')
-  unregister(@Body() dto: InboundUnregisterInputPortDto): string {
+  unregister(@Body() dto: UnregisterInputPortDto): string {
     return this.service.unregister(dto);
   }
 
   @Get('findTokenAll')
-  findTokenAll(@Query() dto: InboundSendMessageInputPortDto): string {
+  findTokenAll(@Query() dto: FindTokenInputPortDto): string {
     return this.service.findTokenAll(dto);
   }
 
   // MessagePattern
 
-  @MessagePattern('register')
-  registerStream(dto: InboundRegisterInputPortDto): string {
+  @MessagePattern({ cmd: 'register' })
+  registerStream(dto: RegisterInputPortDto): string {
     return this.service.register(dto);
   }
 
-  @MessagePattern('unregister')
-  unregisterStream(@Body() dto: InboundUnregisterInputPortDto): string {
+  @MessagePattern({ cmd: 'unregister' })
+  unregisterStream(@Body() dto: UnregisterInputPortDto): string {
     return this.service.unregister(dto);
   }
 
-  @MessagePattern('findTokenAll')
-  findTokenAllStream(@Query() dto: InboundSendMessageInputPortDto): string {
+  @MessagePattern({ cmd: 'findTokenAll' })
+  findTokenAllStream(@Query() dto: FindTokenInputPortDto): string {
     return this.service.findTokenAll(dto);
-  }
-
-  @MessagePattern('getHello1')
-  getHello1(name: string): string {
-    console.log('MessagePattern getHello1');
-    return this.service.getHello1(name);
   }
 }

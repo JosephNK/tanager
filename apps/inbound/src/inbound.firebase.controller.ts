@@ -1,12 +1,7 @@
-import { Controller, Body, Get, Post, Query } from '@nestjs/common';
+import { Controller, Body, Post } from '@nestjs/common';
 import { InboundFirebaseService } from './inbound.firebase.service';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
-import {
-  InboundRegisterInputPortDto,
-  InboundUnregisterInputPortDto,
-  InboundSendMessageInputPortDto,
-  InboundFindTokenInputPortDto,
-} from './inbound.input.port';
+import { MessagePattern } from '@nestjs/microservices';
+import { SendMessageInputPortDto } from '@app/commons';
 
 /// Adapter
 @Controller()
@@ -16,9 +11,7 @@ export class InboundFirebaseController {
   // RESTful
 
   @Post('sendMessage')
-  async sendMessage(
-    @Body() dto: InboundSendMessageInputPortDto,
-  ): Promise<string> {
+  async sendMessage(@Body() dto: SendMessageInputPortDto): Promise<string> {
     return this.service.sendMessage(dto);
   }
 
@@ -26,7 +19,7 @@ export class InboundFirebaseController {
 
   @MessagePattern('sendMessage')
   async sendMessageStream(
-    @Body() dto: InboundSendMessageInputPortDto,
+    @Body() dto: SendMessageInputPortDto,
   ): Promise<string> {
     return this.service.sendMessage(dto);
   }

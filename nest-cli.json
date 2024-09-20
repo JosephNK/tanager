@@ -45,6 +45,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/exceptions/tsconfig.lib.json"
       }
+    },
+    "outbound": {
+      "type": "application",
+      "root": "apps/outbound",
+      "entryFile": "main",
+      "sourceRoot": "apps/outbound/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/outbound/tsconfig.app.json"
+      }
     }
   }
 }

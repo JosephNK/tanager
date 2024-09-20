@@ -1,8 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import {
-  IsBoolean,
   IsEnum,
-  IsNotEmpty,
   IsNumber,
   IsString,
   Max,
@@ -26,12 +24,28 @@ class EnvironmentVariables {
   @Max(65535)
   PORT: number;
 
-  @IsNotEmpty()
-  @IsBoolean()
-  ENABLED_MICROSERVICE: boolean;
+  @IsString()
+  DATABASE_TYPE: string;
 
   @IsString()
-  FIREBASE_SERVICE_KEY_FILE: string;
+  DATABASE_URL: string;
+
+  @IsString()
+  DATABASE_HOST: string;
+
+  @IsNumber()
+  @Min(0)
+  @Max(65535)
+  DATABASE_PORT: number;
+
+  @IsString()
+  DATABASE_USERNAME: string;
+
+  @IsString()
+  DATABASE_PASSWORD: string;
+
+  @IsString()
+  DATABASE_NAME: string;
 }
 
 export function validate(config: Record<string, unknown>) {
