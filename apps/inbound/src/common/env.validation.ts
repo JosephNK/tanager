@@ -25,7 +25,7 @@ class EnvironmentVariables {
   PORT: number;
 
   @IsString()
-  FIREBASE_SERVICE_KEY_PATH: string;
+  FIREBASE_SERVICE_KEY_FILE: string;
 }
 
 export function validate(config: Record<string, unknown>) {

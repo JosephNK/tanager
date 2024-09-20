@@ -4,7 +4,7 @@ import { InboundController } from './inbound.controller';
 import { InboundFirebaseController } from './inbound.firebase.controller';
 import { InboundService } from './inbound.service';
 import { InboundFirebaseService } from './inbound.firebase.service';
-import { validate } from './env.validation';
+import { validate } from './common/env.validation';
 
 @Module({
   imports: [

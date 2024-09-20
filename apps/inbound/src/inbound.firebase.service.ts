@@ -7,7 +7,6 @@ import {
 } from './inbound.input.port';
 import * as admin from 'firebase-admin';
 import { readFile } from 'fs/promises';
-// import { UserNotFoundException } from '@app/commons';
 import { UserNotFoundException } from '@app/exceptions';
 
 /// Service
@@ -15,7 +14,7 @@ import { UserNotFoundException } from '@app/exceptions';
 export class InboundFirebaseService {
   async sendMessage(dto: InboundSendMessageInputPortDto): Promise<string> {
     try {
-      let filePath = `../${process.env.FIREBASE_SERVICE_KEY_PATH}`;
+      let filePath = `../${process.env.FIREBASE_SERVICE_KEY_FILE}`;
       let data = await readFile(filePath, 'utf8');
       console.log(data);
       return `Hello World!! ${data}`;
