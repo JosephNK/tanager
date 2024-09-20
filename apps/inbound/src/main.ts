@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { InboundModule } from './inbound.module';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 // import { Logger } from '@nestjs/common';
-import { AllExceptionFilter } from '@app/exceptions';
+import { TanagerExceptionFilter } from '@app/exceptions';
 
 // const logger = new Logger('Blog');
 
@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(InboundModule);
 
   // Filters 설정
-  app.useGlobalFilters(new AllExceptionFilter());
+  app.useGlobalFilters(new TanagerExceptionFilter());
 
   // 마이크로서비스 서버 설정
   app.connectMicroservice<MicroserviceOptions>({

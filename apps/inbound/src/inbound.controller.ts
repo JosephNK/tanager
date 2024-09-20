@@ -3,6 +3,7 @@ import { MessagePattern } from '@nestjs/microservices';
 import { InboundService } from './inbound.service';
 import {
   RegisterInputPortDto,
+  RegisterOutputPortDto,
   UnregisterInputPortDto,
   FindTokenInputPortDto,
 } from '@app/commons';
@@ -15,9 +16,8 @@ export class InboundController {
   // RESTful
 
   @Post('register')
-  register(@Body() dto: RegisterInputPortDto): string {
-    console.log('register');
-    return this.service.register(dto);
+  register(@Body() dto: RegisterInputPortDto): RegisterOutputPortDto {
+    return this.service.register(dto, false);
   }
 
   @Post('unregister')
@@ -33,8 +33,8 @@ export class InboundController {
   // MessagePattern
 
   @MessagePattern({ cmd: 'register' })
-  registerStream(dto: RegisterInputPortDto): string {
-    return this.service.register(dto);
+  registerStream(dto: RegisterInputPortDto): RegisterOutputPortDto {
+    return this.service.register(dto, true);
   }
 
   @MessagePattern({ cmd: 'unregister' })

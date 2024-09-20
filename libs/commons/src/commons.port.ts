@@ -27,13 +27,26 @@ export type FindTokenInputPortDto = {
 export interface Port {
   resigter(params: RegisterInputPortDto): Promise<RegisterOutputPortDto>;
 
-  unresigter(params: UnregisterInputPortDto): Promise<RegisterOutputPortDto>;
+  unresigter(
+    params: UnregisterInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto>;
 
-  sendMessage(params: SendMessageInputPortDto): Promise<RegisterOutputPortDto>;
+  sendMessage(
+    params: SendMessageInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto>;
 
-  findTokenAll(params: FindTokenInputPortDto): Promise<RegisterOutputPortDto>;
+  findTokenAll(
+    params: FindTokenInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto>;
 }
 
 /// Output Port
 
-export type RegisterOutputPortDto = void;
+export type RegisterEmptyOutputPortDto = void;
+
+export type RegisterOutputPortDto = {
+  identifier: string;
+  token: string;
+  platform?: Platform;
+  errorMessage?: string;
+};

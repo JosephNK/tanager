@@ -1,34 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import {
-  ClientProxyFactory,
-  Transport,
-  ClientProxy,
-} from '@nestjs/microservices';
+import { RpcException } from '@nestjs/microservices';
 import { getPlatformEnum } from '@app/commons';
 import {
   RegisterInputPortDto,
+  RegisterOutputPortDto,
   UnregisterInputPortDto,
   FindTokenInputPortDto,
 } from '@app/commons';
+import {
+  IdentifierNotFoundException,
+  TokenNotFoundException,
+} from '@app/exceptions';
 
 /// Service
 @Injectable()
 export class InboundService {
-  private client: ClientProxy;
-
-  constructor() {
-    this.client = ClientProxyFactory.create({
-      transport: Transport.TCP,
-      options: {
-        port: 3100,
-      },
-    });
-  }
-
-  register(dto: RegisterInputPortDto): string {
-    const token = dto.token;
-    const platform = getPlatformEnum(dto.platform);
-    return `Hello World! ${token}, ${platform}`;
+  register(dto: RegisterInputPortDto, isRPC: boolean): RegisterOutputPortDto {
+    try {
+      const identifier = dto.identifier;
+      const token = dto.token;
+      const platform = getPlatformEnum(dto.platform);
+      if (identifier === undefined || identifier === '') {
+        if (isRPC) {
+          throw new RpcException(new IdentifierNotFoundException());
+        } else {
+          throw new IdentifierNotFoundException();
+        }
+      }
+      if (token === undefined || token === '') {
+        if (isRPC) {
+          throw new RpcException(new TokenNotFoundException());
+        } else {
+          throw new TokenNotFoundException();
+        }
+      }
+      return {
+        identifier: identifier,
+        token: token,
+        platform: platform,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   unregister(dto: UnregisterInputPortDto): string {

@@ -1,6 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import {
   RegisterInputPortDto,
+  RegisterOutputPortDto,
   // UnregisterInputPortDto,
   // SendMessageInputPortDto,
   // FindTokenInputPortDto,
@@ -22,9 +23,7 @@ export class AppController {
   // RESTful
 
   @Post('register')
-  async register(@Body() dto: RegisterInputPortDto): Promise<string> {
-    const helloValue = this.appService.register(dto);
-    const result = await lastValueFrom(helloValue);
-    return result;
+  register(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+    return this.appService.register(dto);
   }
 }

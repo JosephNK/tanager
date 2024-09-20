@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { BaseException } from './base.exception.interface';
 import {
-  AuthExceptionCodeEnum,
+  ParamExceptionCodeEnum,
   UncatchedExceptionCodeEnum,
 } from './exception.enum';
 
@@ -14,8 +14,20 @@ export class UnCatchedException extends BaseException {
   }
 }
 
-export class UserNotFoundException extends BaseException {
+export class IdentifierNotFoundException extends BaseException {
   constructor() {
-    super(AuthExceptionCodeEnum.UserNotFound, HttpStatus.NOT_FOUND);
+    super(
+      ParamExceptionCodeEnum.IdentifierNotFound,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+  }
+}
+
+export class TokenNotFoundException extends BaseException {
+  constructor() {
+    super(
+      ParamExceptionCodeEnum.TokenNotFound,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
   }
 }
