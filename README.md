@@ -4,7 +4,35 @@
 
 ## Features
 
-- Firebase Push Notifications
+- Firebase Push Notification
+
+## API
+
+For more information, see [Swagger](http://localhost:3000/docs])
+
+- Register Token
+
+```
+/register
+```
+
+- Unregister Token
+
+```
+/unregister
+```
+
+- Token List
+
+```
+/findTokenAll
+```
+
+- Send Message
+
+```
+/sendMessage
+```
 
 ## Setup .env
 
@@ -79,7 +107,9 @@ $ yarn run test:e2e
 $ yarn run test:cov
 ```
 
-## Swagger
+## Support Swagger
+
+Provides information about the API list in Swagger.
 
 ```bash
 http://localhost:3000/docs
