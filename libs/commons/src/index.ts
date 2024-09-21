@@ -1,4 +1,5 @@
 export * from './commons.enum';
+export * from './commons.guard';
 export * from './commons.module';
 export * from './commons.port';
 export * from './commons.service';

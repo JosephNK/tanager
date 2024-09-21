@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { InboundModule } from './inbound.module';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
-// import { Logger } from '@nestjs/common';
 import { TanagerExceptionFilter } from '@app/exceptions';
+// import { Logger } from '@nestjs/common';
+import { InboundModule } from './inbound.module';
 
 // const logger = new Logger('Blog');
 
@@ -11,20 +11,19 @@ async function bootstrap() {
 
   const app = await NestFactory.create(InboundModule);
 
-  // Filters 설정
+  // Filters Setup
   app.useGlobalFilters(new TanagerExceptionFilter());
 
-  // 마이크로서비스 서버 설정
+  // MicroService Setup
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
-      //port: parseInt(port),
       host: 'localhost',
-      port: 8877,
+      port: parseInt(process.env.MICROSERVICE_INBOUND_PORT),
     },
   });
 
-  // 마이크로서비스 시작
+  // MicroService Start
   await app.startAllMicroservices();
 
   await app.listen(port);

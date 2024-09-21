@@ -90,7 +90,8 @@
       "^@app/common(|/.*)$": "<rootDir>/libs/src/common/$1",
       "^@app/exception(|/.*)$": "<rootDir>/libs/src/exception/$1",
       "^@app/commons(|/.*)$": "<rootDir>/libs/commons/src/$1",
-      "^@app/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1"
+      "^@app/exceptions(|/.*)$": "<rootDir>/libs/exceptions/src/$1",
+      "^@app/interceptors(|/.*)$": "<rootDir>/libs/interceptors/src/$1"
     }
   }
 }

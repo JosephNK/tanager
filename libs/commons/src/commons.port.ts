@@ -24,22 +24,6 @@ export type FindTokenInputPortDto = {
   identifier: string;
 };
 
-export interface Port {
-  resigter(params: RegisterInputPortDto): Promise<RegisterOutputPortDto>;
-
-  unresigter(
-    params: UnregisterInputPortDto,
-  ): Promise<RegisterEmptyOutputPortDto>;
-
-  sendMessage(
-    params: SendMessageInputPortDto,
-  ): Promise<RegisterEmptyOutputPortDto>;
-
-  findTokenAll(
-    params: FindTokenInputPortDto,
-  ): Promise<RegisterEmptyOutputPortDto>;
-}
-
 /// Output Port
 
 export type RegisterEmptyOutputPortDto = void;
@@ -48,5 +32,18 @@ export type RegisterOutputPortDto = {
   identifier: string;
   token: string;
   platform?: Platform;
-  errorMessage?: string;
 };
+
+///
+
+export interface TokenPort {
+  resigter(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto>;
+
+  unresigter(dto: UnregisterInputPortDto): Promise<RegisterEmptyOutputPortDto>;
+
+  findTokenAll(dto: FindTokenInputPortDto): Promise<RegisterEmptyOutputPortDto>;
+}
+
+export interface SendPort {
+  sendMessage(dto: SendMessageInputPortDto): RegisterEmptyOutputPortDto;
+}

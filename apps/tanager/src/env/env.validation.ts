@@ -1,14 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import {
-  IsBoolean,
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  Max,
-  Min,
-  validateSync,
-} from 'class-validator';
+import { IsEnum, IsNumber, Max, Min, validateSync } from 'class-validator';
 
 enum Environment {
   Development = 'development',
@@ -26,12 +17,10 @@ class EnvironmentVariables {
   @Max(65535)
   PORT: number;
 
-  @IsNotEmpty()
-  @IsBoolean()
-  ENABLED_MICROSERVICE: boolean;
-
-  @IsString()
-  FIREBASE_SERVICE_KEY_FILE: string;
+  @IsNumber()
+  @Min(0)
+  @Max(65535)
+  MICROSERVICE_INBOUND_PORT: number;
 }
 
 export function validate(config: Record<string, unknown>) {

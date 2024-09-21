@@ -19,13 +19,18 @@ class EnvironmentVariables {
   @IsEnum(Environment)
   NODE_ENV: Environment;
 
-  // @IsNumber()
-  // @Min(0)
-  // @Max(65535)
-  // PORT: number;
+  @IsNumber()
+  @Min(0)
+  @Max(65535)
+  PORT: number;
+
+  @IsNumber()
+  @Min(0)
+  @Max(65535)
+  MICROSERVICE_INBOUND_PORT: number;
 
   @IsString()
-  DATABASE_HOST: string;
+  FIREBASE_SERVICE_KEY_FILE: string;
 }
 
 export function validate(config: Record<string, unknown>) {

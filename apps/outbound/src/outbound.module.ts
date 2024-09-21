@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OutboundController } from './outbound.controller';
 import { OutboundService } from './outbound.service';
-import { validate } from './common/env.validation';
+import { validate } from './env/env.validation';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { TypeormConfig } from './database/typeorm.config';
 import { Token } from './entity/token.entity';

@@ -12,14 +12,14 @@ export class Token extends BaseEntity {
   @Column({ type: 'varchar', unique: true })
   token: string;
 
-  @Column({ type: 'timestamptz' })
+  @Column({ type: 'timestamptz', default: new Date() })
   createAt: Date;
 
-  @Column({ type: 'timestamptz' })
-  updateAt: Date;
+  @Column({ type: 'timestamptz', nullable: true })
+  updateAt?: Date;
 
-  @Column({ type: 'timestamptz' })
-  deleteAt: Date;
+  @Column({ type: 'timestamptz', nullable: true })
+  deleteAt?: Date;
 
   @Column({ type: 'varchar', default: Platform.NONE })
   platform: string;

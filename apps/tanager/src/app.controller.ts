@@ -1,29 +1,36 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import {
+  ContentTypeApplicationJsonGuard,
+  FindTokenInputPortDto,
+  RegisterEmptyOutputPortDto,
   RegisterInputPortDto,
   RegisterOutputPortDto,
-  // UnregisterInputPortDto,
-  // SendMessageInputPortDto,
-  // FindTokenInputPortDto,
+  TokenPort,
+  UnregisterInputPortDto,
 } from '@app/commons';
 import { AppService } from './app.service';
-import { lastValueFrom } from 'rxjs';
 
 @Controller()
-export class AppController {
+export class AppController implements TokenPort {
   constructor(private readonly appService: AppService) {}
-
-  // @Get()
-  // async resigter(): Promise<string> {
-  //   console.log('getHello1');
-  //   const helloValue = await this.appService.resigter();
-  //   return lastValueFrom(helloValue);
-  // }
 
   // RESTful
 
   @Post('register')
-  register(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+  @UseGuards(ContentTypeApplicationJsonGuard)
+  resigter(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
     return this.appService.register(dto);
+  }
+
+  unresigter(dto: UnregisterInputPortDto): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
+  }
+
+  findTokenAll(
+    dto: FindTokenInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
   }
 }

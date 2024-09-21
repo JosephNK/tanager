@@ -6,44 +6,56 @@ import {
   RegisterOutputPortDto,
   UnregisterInputPortDto,
   FindTokenInputPortDto,
+  TokenPort,
+  RegisterEmptyOutputPortDto,
 } from '@app/commons';
 
 /// Adapter
 @Controller()
-export class InboundController {
+export class InboundController implements TokenPort {
   constructor(private readonly service: InboundService) {}
 
   // RESTful
 
   @Post('register')
-  register(@Body() dto: RegisterInputPortDto): RegisterOutputPortDto {
+  resigter(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
     return this.service.register(dto, false);
   }
 
   @Post('unregister')
-  unregister(@Body() dto: UnregisterInputPortDto): string {
-    return this.service.unregister(dto);
+  unresigter(dto: UnregisterInputPortDto): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
   }
 
   @Get('findTokenAll')
-  findTokenAll(@Query() dto: FindTokenInputPortDto): string {
-    return this.service.findTokenAll(dto);
+  findTokenAll(
+    dto: FindTokenInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
   }
 
   // MessagePattern
 
   @MessagePattern({ cmd: 'register' })
-  registerStream(dto: RegisterInputPortDto): RegisterOutputPortDto {
+  registerStream(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
     return this.service.register(dto, true);
   }
 
   @MessagePattern({ cmd: 'unregister' })
-  unregisterStream(@Body() dto: UnregisterInputPortDto): string {
-    return this.service.unregister(dto);
+  unregisterStream(
+    @Body() dto: UnregisterInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
   }
 
   @MessagePattern({ cmd: 'findTokenAll' })
-  findTokenAllStream(@Query() dto: FindTokenInputPortDto): string {
-    return this.service.findTokenAll(dto);
+  findTokenAllStream(
+    @Query() dto: FindTokenInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
   }
 }

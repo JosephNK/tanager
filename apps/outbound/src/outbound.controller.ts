@@ -1,48 +1,60 @@
 import { Controller, Body, Get, Post, Query } from '@nestjs/common';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
+import { MessagePattern } from '@nestjs/microservices';
 import { OutboundService } from './outbound.service';
 import {
-  OutboundRegisterInputPortDto,
-  OutboundUnregisterInputPortDto,
-  OutboundSendMessageInputPortDto,
-  OutboundFindTokenInputPortDto,
-} from './outbound.input.port';
+  RegisterInputPortDto,
+  UnregisterInputPortDto,
+  SendMessageInputPortDto,
+  TokenPort,
+  RegisterOutputPortDto,
+  RegisterEmptyOutputPortDto,
+} from '@app/commons';
 
 @Controller()
-export class OutboundController {
+export class OutboundController implements TokenPort {
   constructor(private readonly service: OutboundService) {}
 
   // RESTful
 
   @Post('register')
-  register(@Body() dto: OutboundRegisterInputPortDto): string {
-    return this.service.register(dto);
+  resigter(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+    return this.service.register(dto, false);
   }
 
-  @Post('unregister')
-  unregister(@Body() dto: OutboundUnregisterInputPortDto): string {
-    return this.service.unregister(dto);
+  @Post('unresigter')
+  unresigter(dto: UnregisterInputPortDto): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
   }
 
   @Get('findTokenAll')
-  findTokenAll(@Query() dto: OutboundSendMessageInputPortDto): string {
-    return this.service.findTokenAll(dto);
+  findTokenAll(
+    @Query() dto: SendMessageInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
   }
 
   // MessagePattern
 
-  @MessagePattern('register')
-  registerStream(dto: OutboundRegisterInputPortDto): string {
-    return this.service.register(dto);
+  @MessagePattern({ cmd: 'register' })
+  registerStream(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+    return this.service.register(dto, true);
   }
 
-  @MessagePattern('unregister')
-  unregisterStream(@Body() dto: OutboundUnregisterInputPortDto): string {
-    return this.service.unregister(dto);
+  @MessagePattern({ cmd: 'unregister' })
+  unregisterStream(
+    @Body() dto: UnregisterInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
   }
 
-  @MessagePattern('findTokenAll')
-  findTokenAllStream(@Query() dto: OutboundSendMessageInputPortDto): string {
-    return this.service.findTokenAll(dto);
+  @MessagePattern({ cmd: 'findTokenAll' })
+  findTokenAllStream(
+    @Query() dto: SendMessageInputPortDto,
+  ): Promise<RegisterEmptyOutputPortDto> {
+    console.log('dto', dto);
+    throw new Error('Method not implemented.');
   }
 }
