@@ -14,7 +14,9 @@ export class SuccessRegisterResponse {
 }
 
 export class SuccessUnregisterResponse {
-  @ApiProperty()
+  @ApiProperty({
+    isArray: true,
+  })
   data: UnregisterOutputPortDto;
 }
 
