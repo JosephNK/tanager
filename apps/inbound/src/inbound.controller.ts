@@ -7,11 +7,11 @@ import {
   UnregisterInputPortDto,
   FindTokenInputPortDto,
   TokenPort,
-  RegisterEmptyOutputPortDto,
   UnregisterOutputPortDto,
   SendMessageInputPortDto,
   SendPort,
   SendMessageOutputPortDto,
+  FindTokenOutputPortDto,
 } from '@app/commons';
 
 /// Adapter
@@ -36,9 +36,8 @@ export class InboundController implements TokenPort, SendPort {
   @Get('findTokenAll')
   findTokenAll(
     @Query() dto: FindTokenInputPortDto,
-  ): Promise<RegisterEmptyOutputPortDto> {
-    console.log('dto', dto);
-    throw new Error('Method not implemented.');
+  ): Promise<FindTokenOutputPortDto> {
+    return this.service.findTokenAll(dto, false);
   }
 
   @Post('sendMessage')
@@ -65,9 +64,8 @@ export class InboundController implements TokenPort, SendPort {
   @MessagePattern({ cmd: 'findTokenAll' })
   findTokenAllStream(
     dto: FindTokenInputPortDto,
-  ): Promise<RegisterEmptyOutputPortDto> {
-    console.log('dto', dto);
-    throw new Error('Method not implemented.');
+  ): Promise<FindTokenOutputPortDto> {
+    return this.service.findTokenAll(dto, true);
   }
 
   @MessagePattern({ cmd: 'sendMessage' })

@@ -12,23 +12,27 @@ import {
   TokenStatus,
   SendMessageInputPortDto,
   SendMessageOutputPortDto,
-  FirebaseSendMessageOutputPortDto,
+  getMessageDataFrom,
+  FindTokenOutputPortDto,
 } from '@app/commons';
 import { Token } from './entity/token.entity';
 import {
   DatabaseTokenNotFoundException,
   DatabaseTokenRegisterException,
   DatabaseTokenUnregisterException,
-  FirebaseMessageSendException,
+  InvalidJSONException,
   toException,
 } from '@app/exceptions';
 import { FirebaseService } from './firebase/firebase.service';
+import { MessageLog } from './entity/message.log.entity';
 
 @Injectable()
 export class OutboundService {
   constructor(
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
+    @InjectRepository(MessageLog)
+    private readonly messageLogRepository: Repository<MessageLog>,
     private readonly firebaseService: FirebaseService,
   ) {}
 
@@ -150,8 +154,30 @@ export class OutboundService {
     }
   }
 
-  findTokenAll(dto: FindTokenInputPortDto): string {
-    return `Hello World! ${dto.identifier}`;
+  async findTokenAll(
+    dto: FindTokenInputPortDto,
+    isRPC: boolean,
+  ): Promise<FindTokenOutputPortDto> {
+    try {
+      const tokens: Token[] = await this.tokenRepository.findBy({
+        identifier: dto.identifier,
+      });
+
+      return tokens.map((token) => {
+        return {
+          identifier: token.identifier,
+          token: token.token,
+          platform: getPlatformEnum(token.platform),
+          status: getTokenStatusEnum(token.status),
+        };
+      });
+    } catch (error) {
+      console.error('Error findTokenAll:', error);
+      throw toException(
+        new DatabaseTokenNotFoundException(error.detail),
+        isRPC,
+      );
+    }
   }
 
   async sendMessage(
@@ -159,57 +185,73 @@ export class OutboundService {
     isRPC: boolean,
   ): Promise<SendMessageOutputPortDto> {
     try {
-      const tokens: Token[] = await this.tokenRepository.find({
-        where: [
-          {
-            identifier: dto.identifier,
-            token: dto.token,
-            status: TokenStatus.ISSUED,
-          },
-          {
-            identifier: dto.identifier,
-            token: dto.token,
-            status: TokenStatus.VAILD,
-          },
-        ],
+      // Data Object to String
+      let messageData: string;
+      try {
+        messageData = getMessageDataFrom(dto);
+      } catch (error) {
+        throw new InvalidJSONException(error);
+      }
+
+      // identifier와 token으로 유효한 Token 리스트 가져오기.
+      const tokens: Token[] = await this.getVaildTokensFrom(dto);
+
+      // Firebase 처리
+      const messageLogs = await this.firebaseService.processSendMessage(
+        dto,
+        messageData,
+        tokens,
+      );
+
+      // Message Logs 저장
+      await Promise.all(
+        messageLogs.map(async (messageLog) => {
+          await this.messageLogRepository.save(messageLog);
+        }),
+      );
+
+      // Result
+      return messageLogs.map((messageLog) => {
+        const identifier = messageLog.identifier;
+        const token = messageLog.token;
+        const state = messageLog.state;
+        return {
+          identifier: identifier,
+          token: token,
+          messageStatus: state,
+        };
       });
-
-      if (tokens.length == 0) {
-        throw new DatabaseTokenNotFoundException();
-      }
-
-      const messageResults: FirebaseSendMessageOutputPortDto[] = [];
-      for (const token of tokens) {
-        const result = await this.firebaseService.sendMessage({
-          token: token.token,
-          title: dto.token,
-          message: dto.message,
-        });
-        messageResults.push(result);
-      }
-
-      const errorMessages: string[] = [];
-      for (const messageResult of messageResults) {
-        const token = messageResult.token;
-        const response = messageResult.response;
-        const errorCode = messageResult.errorCode;
-        console.log('errorCode', errorCode);
-
-        if (errorCode) {
-          const errorMessage = `token: ${token}, errorCode: ${errorCode}`;
-          errorMessages.push(errorMessage);
-        }
-      }
-
-      if (errorMessages.length > 0) {
-        const message = errorMessages.join('/n');
-        throw new FirebaseMessageSendException(message);
-      }
-
-      return [];
     } catch (error) {
-      console.error('Error unregister token:', error);
+      console.error('Error sendMessage:', error);
       throw toException(error, isRPC);
     }
+  }
+
+  private async getVaildTokensFrom(
+    dto: SendMessageInputPortDto,
+  ): Promise<Token[]> {
+    // identifier와 token으로 유효한 Token 리스트 가져오기.
+    const identifier = dto.identifier;
+    const token = dto.token;
+    const tokens: Token[] = await this.tokenRepository.find({
+      where: [
+        {
+          identifier: identifier,
+          token: token,
+          status: TokenStatus.ISSUED,
+        },
+        {
+          identifier: identifier,
+          token: token,
+          status: TokenStatus.VAILD,
+        },
+      ],
+    });
+
+    if (tokens.length == 0) {
+      throw new DatabaseTokenNotFoundException();
+    }
+
+    return tokens;
   }
 }

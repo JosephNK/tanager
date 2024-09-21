@@ -10,6 +10,7 @@ export enum RequestDataExceptionCodeEnum {
   IdentifierNotFound = '20000',
   TokenNotFound = '20001',
   MessageNotFound = '20002',
+  InvalidJSON = '20003',
 }
 
 export enum DatabaseExceptionCodeEnum {
@@ -28,6 +29,7 @@ export enum ExceptionErrorMessage {
   IdentifierEmpty = 'Identifier must not be empty',
   TokenEmpty = 'Token must not be empty',
   MessageEmpty = 'Message must not be empty',
+  InvalidJSON = 'Invalid JSON Data',
   FailedToTokenRegister = 'Failed to Token Register',
   TokenNotFound = 'Token Not Found',
   FailedToTokenUnregister = 'Failed to Token Unregister',

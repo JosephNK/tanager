@@ -12,6 +12,9 @@ export class MessageLog extends BaseEntity {
   @Column({ type: 'varchar' })
   token: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  data: string;
+
   @Column({ type: 'varchar', default: Provider.NONE })
   provider: string;
 

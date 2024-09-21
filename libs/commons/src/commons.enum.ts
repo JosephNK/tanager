@@ -33,6 +33,19 @@ export enum MessageStatus {
   CANCELED = 'CANCELED', // 발송 취소
 }
 
+export enum FirebaseMessageStatus {
+  INVALID_DATA = 'INVALID_DATA',
+  LIMITED = 'LIMITED',
+  INVALID_TOKEN = 'INVALID_TOKEN',
+  EXCEEDED = 'EXCEEDED',
+  TOO_MANY_TOPICS = 'TOO_MANY_TOPICS',
+  AUTH = 'AUTH',
+  CERDENTIALS = 'CERDENTIALS',
+  UNAVAILABLE = 'UNAVAILABLE',
+  INTERNAL = 'INTERNAL',
+  UNKNOWN = 'UNKNOWN',
+}
+
 export function getTokenStatusEnum(value: string): TokenStatus | null {
   value = value.toUpperCase();
   if (Object.values(TokenStatus).includes(value as TokenStatus)) {

@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  FindTokenInputPortDto,
+  FindTokenOutputPortDto,
   RegisterInputPortDto,
   RegisterOutputPortDto,
   SendMessageInputPortDto,
@@ -38,44 +40,48 @@ export class AppService {
   }
 
   async register(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
-    await lastValueFrom(
-      this.inboundClient
-        .send<RegisterOutputPortDto>({ cmd: 'register' }, dto)
-        .pipe(catchError((error) => throwError(() => new RpcException(error)))),
-    );
-    return await lastValueFrom(
-      this.outboundClient
-        .send<RegisterOutputPortDto>({ cmd: 'register' }, dto)
-        .pipe(catchError((error) => throwError(() => new RpcException(error)))),
+    return await this.inOutStream<RegisterInputPortDto, RegisterOutputPortDto>(
+      'register',
+      dto,
     );
   }
 
   async unregister(
     dto: UnregisterInputPortDto,
   ): Promise<UnregisterOutputPortDto> {
-    await lastValueFrom(
-      this.inboundClient
-        .send<UnregisterOutputPortDto>({ cmd: 'unregister' }, dto)
-        .pipe(catchError((error) => throwError(() => new RpcException(error)))),
-    );
-    return await lastValueFrom(
-      this.outboundClient
-        .send<UnregisterOutputPortDto>({ cmd: 'unregister' }, dto)
-        .pipe(catchError((error) => throwError(() => new RpcException(error)))),
-    );
+    return await this.inOutStream<
+      UnregisterInputPortDto,
+      UnregisterOutputPortDto
+    >('unregister', dto);
+  }
+
+  async findTokenAll(
+    dto: FindTokenInputPortDto,
+  ): Promise<FindTokenOutputPortDto> {
+    return await this.inOutStream<
+      FindTokenInputPortDto,
+      FindTokenOutputPortDto
+    >('findTokenAll', dto);
   }
 
   async sendMessage(
     dto: SendMessageInputPortDto,
   ): Promise<SendMessageOutputPortDto> {
+    return await this.inOutStream<
+      SendMessageInputPortDto,
+      SendMessageOutputPortDto
+    >('sendMessage', dto);
+  }
+
+  private async inOutStream<T, P>(cmd: string, dto: T): Promise<P> {
     await lastValueFrom(
       this.inboundClient
-        .send<SendMessageOutputPortDto>({ cmd: 'sendMessage' }, dto)
+        .send<P>({ cmd: cmd }, dto)
         .pipe(catchError((error) => throwError(() => new RpcException(error)))),
     );
     return await lastValueFrom(
       this.outboundClient
-        .send<SendMessageOutputPortDto>({ cmd: 'sendMessage' }, dto)
+        .send<P>({ cmd: cmd }, dto)
         .pipe(catchError((error) => throwError(() => new RpcException(error)))),
     );
   }

@@ -60,6 +60,18 @@ export class MessageNotFoundException extends BaseException {
   }
 }
 
+export class InvalidJSONException extends BaseException {
+  constructor(errorMessage?: string) {
+    super(
+      RequestDataExceptionCodeEnum.InvalidJSON,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      errorMessage
+        ? `${ExceptionErrorMessage.InvalidJSON} :: ${errorMessage}`
+        : ExceptionErrorMessage.InvalidJSON,
+    );
+  }
+}
+
 export class DatabaseTokenRegisterException extends BaseException {
   constructor(errorMessage?: string) {
     super(

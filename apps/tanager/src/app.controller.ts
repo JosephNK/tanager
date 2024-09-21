@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Post, Body, UseGuards } from '@nestjs/common';
 import {
   ContentTypeApplicationJsonGuard,
   FindTokenInputPortDto,
-  RegisterEmptyOutputPortDto,
+  FindTokenOutputPortDto,
   RegisterInputPortDto,
   RegisterOutputPortDto,
   SendMessageInputPortDto,
@@ -35,10 +35,9 @@ export class AppController implements TokenPort, SendPort {
 
   @Get('findTokenAll')
   findTokenAll(
-    dto: FindTokenInputPortDto,
-  ): Promise<RegisterEmptyOutputPortDto> {
-    console.log('dto', dto);
-    throw new Error('Method not implemented.');
+    @Query() dto: FindTokenInputPortDto,
+  ): Promise<FindTokenOutputPortDto> {
+    return this.appService.findTokenAll(dto);
   }
 
   @Post('sendMessage')
