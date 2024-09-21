@@ -48,28 +48,28 @@ export class AppService {
 
   async unregister(
     dto: UnregisterInputPortDto,
-  ): Promise<UnregisterOutputPortDto> {
+  ): Promise<UnregisterOutputPortDto[]> {
     return await this.inOutStream<
       UnregisterInputPortDto,
-      UnregisterOutputPortDto
+      UnregisterOutputPortDto[]
     >('unregister', dto);
   }
 
   async findTokenAll(
     dto: FindTokenInputPortDto,
-  ): Promise<FindTokenOutputPortDto> {
+  ): Promise<FindTokenOutputPortDto[]> {
     return await this.inOutStream<
       FindTokenInputPortDto,
-      FindTokenOutputPortDto
+      FindTokenOutputPortDto[]
     >('findTokenAll', dto);
   }
 
   async sendMessage(
     dto: SendMessageInputPortDto,
-  ): Promise<SendMessageOutputPortDto> {
+  ): Promise<SendMessageOutputPortDto[]> {
     return await this.inOutStream<
       SendMessageInputPortDto,
-      SendMessageOutputPortDto
+      SendMessageOutputPortDto[]
     >('sendMessage', dto);
   }
 

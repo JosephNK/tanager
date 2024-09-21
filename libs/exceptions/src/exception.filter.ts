@@ -7,6 +7,7 @@ import {
 import { RpcException } from '@nestjs/microservices';
 import { BaseException } from './base.exception.interface';
 import { UndefinedException } from './exception';
+import { FailedCommonResponse, ErrorResponseData } from '@app/commons';
 
 class ErrorResponse {
   error: object;
@@ -35,15 +36,18 @@ export class TanagerExceptionFilter implements ExceptionFilter {
     res.timestamp = new Date().getTime().toString();
     res.path = request.url;
 
-    response.status(res.statusCode).json(
-      new ErrorResponse({
-        errorCode: res.errorCode,
-        errorMessage: res.errorMessage,
-        statusCode: res.statusCode,
-        timestamp: res.timestamp,
-        path: res.path,
-      }).toJSON(),
-    );
+    const faildResponse = new FailedCommonResponse();
+    const errorResponse = new ErrorResponseData();
+    errorResponse.errorCode = res.errorCode;
+    errorResponse.errorMessage = res.errorMessage;
+    errorResponse.statusCode = res.statusCode;
+    errorResponse.timestamp = res.timestamp;
+    errorResponse.path = res.path;
+    faildResponse.error = errorResponse;
+
+    response
+      .status(res.statusCode)
+      .json(new ErrorResponse(faildResponse.toJSON()).toJSON());
   }
 }
 
@@ -59,26 +63,27 @@ export class RpcExceptionFilter implements ExceptionFilter {
     const timestamp = new Date().getTime().toString();
     const path = request.url;
 
+    const faildResponse = new FailedCommonResponse();
+    const errorResponse = new ErrorResponseData();
+
     if (status === 'error') {
-      response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
-        new ErrorResponse({
-          errorCode: '99999',
-          errorMessage: error.message,
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          timestamp: timestamp,
-          path: path,
-        }).toJSON(),
-      );
+      errorResponse.errorCode = '99999';
+      errorResponse.errorMessage = error.message;
+      errorResponse.statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+      errorResponse.timestamp = timestamp;
+      errorResponse.path = path;
     } else {
-      response.status(HttpStatus.INTERNAL_SERVER_ERROR).json(
-        new ErrorResponse({
-          errorCode: error.errorCode,
-          errorMessage: error.errorMessage,
-          statusCode: error.statusCode,
-          timestamp: timestamp,
-          path: path,
-        }).toJSON(),
-      );
+      errorResponse.errorCode = error.errorCode;
+      errorResponse.errorMessage = error.errorMessage;
+      errorResponse.statusCode = error.statusCode;
+      errorResponse.timestamp = timestamp;
+      errorResponse.path = path;
     }
+
+    faildResponse.error = errorResponse;
+
+    response
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .json(new ErrorResponse(faildResponse.toJSON()).toJSON());
   }
 }

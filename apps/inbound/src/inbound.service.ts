@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   FindTokenOutputPortDto,
   getPlatformEnum,
+  MessageStatus,
   SendMessageInputPortDto,
   SendMessageOutputPortDto,
   UnregisterOutputPortDto,
@@ -51,7 +52,7 @@ export class InboundService {
   async unregister(
     dto: UnregisterInputPortDto,
     isRPC: boolean,
-  ): Promise<UnregisterOutputPortDto> {
+  ): Promise<UnregisterOutputPortDto[]> {
     try {
       const identifier = dto.identifier;
       const token = dto.token;
@@ -60,12 +61,11 @@ export class InboundService {
         throw toException(new IdentifierNotFoundException(), isRPC);
       }
 
-      return [
-        {
-          identifier: identifier,
-          token: token,
-        },
-      ] as UnregisterOutputPortDto;
+      const outputDto = new UnregisterOutputPortDto();
+      outputDto.identifier = identifier;
+      outputDto.token = token;
+
+      return [outputDto];
     } catch (error) {
       throw error;
     }
@@ -74,7 +74,7 @@ export class InboundService {
   async findTokenAll(
     dto: FindTokenInputPortDto,
     isRPC: boolean,
-  ): Promise<FindTokenOutputPortDto> {
+  ): Promise<FindTokenOutputPortDto[]> {
     try {
       const identifier = dto.identifier;
 
@@ -82,12 +82,11 @@ export class InboundService {
         throw toException(new IdentifierNotFoundException(), isRPC);
       }
 
-      return [
-        {
-          identifier: identifier,
-          token: '',
-        },
-      ] as FindTokenOutputPortDto;
+      const outputDto = new FindTokenOutputPortDto();
+      outputDto.identifier = identifier;
+      outputDto.token = '';
+
+      return [outputDto];
     } catch (error) {
       throw error;
     }
@@ -96,9 +95,10 @@ export class InboundService {
   async sendMessage(
     dto: SendMessageInputPortDto,
     isRPC: boolean,
-  ): Promise<SendMessageOutputPortDto> {
+  ): Promise<SendMessageOutputPortDto[]> {
     try {
       const identifier = dto.identifier;
+      const token = dto.token;
       const message = dto.message;
 
       if (!identifier) {
@@ -108,7 +108,12 @@ export class InboundService {
         throw toException(new MessageNotFoundException(), isRPC);
       }
 
-      return [dto] as SendMessageOutputPortDto;
+      const outputDto = new SendMessageOutputPortDto();
+      outputDto.identifier = identifier;
+      outputDto.token = token;
+      outputDto.messageStatus = MessageStatus.PENDING;
+
+      return [outputDto];
     } catch (error) {
       throw error;
     }

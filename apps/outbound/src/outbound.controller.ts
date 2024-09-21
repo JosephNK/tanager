@@ -28,19 +28,21 @@ export class OutboundController implements TokenPort, SendPort {
   @Post('unregister')
   unregister(
     @Body() dto: UnregisterInputPortDto,
-  ): Promise<UnregisterOutputPortDto> {
+  ): Promise<UnregisterOutputPortDto[]> {
     return this.service.unregister(dto, false);
   }
 
   @Get('findTokenAll')
   findTokenAll(
     @Query() dto: FindTokenInputPortDto,
-  ): Promise<FindTokenOutputPortDto> {
+  ): Promise<FindTokenOutputPortDto[]> {
     return this.service.findTokenAll(dto, false);
   }
 
   @Post('sendMessage')
-  sendMessage(dto: SendMessageInputPortDto): Promise<SendMessageOutputPortDto> {
+  sendMessage(
+    dto: SendMessageInputPortDto,
+  ): Promise<SendMessageOutputPortDto[]> {
     return this.service.sendMessage(dto, false);
   }
 
@@ -54,21 +56,21 @@ export class OutboundController implements TokenPort, SendPort {
   @MessagePattern({ cmd: 'unregister' })
   unregisterStream(
     dto: UnregisterInputPortDto,
-  ): Promise<UnregisterOutputPortDto> {
+  ): Promise<UnregisterOutputPortDto[]> {
     return this.service.unregister(dto, true);
   }
 
   @MessagePattern({ cmd: 'findTokenAll' })
   findTokenAllStream(
     dto: SendMessageInputPortDto,
-  ): Promise<FindTokenOutputPortDto> {
+  ): Promise<FindTokenOutputPortDto[]> {
     return this.service.findTokenAll(dto, true);
   }
 
   @MessagePattern({ cmd: 'sendMessage' })
   sendMessageStream(
     dto: SendMessageInputPortDto,
-  ): Promise<SendMessageOutputPortDto> {
+  ): Promise<SendMessageOutputPortDto[]> {
     return this.service.sendMessage(dto, true);
   }
 }

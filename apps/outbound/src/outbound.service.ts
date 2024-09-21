@@ -122,7 +122,7 @@ export class OutboundService {
   async unregister(
     dto: UnregisterInputPortDto,
     isRPC: boolean,
-  ): Promise<UnregisterOutputPortDto> {
+  ): Promise<UnregisterOutputPortDto[]> {
     try {
       const tokens: Token[] = await this.tokenRepository.findBy({
         identifier: dto.identifier,
@@ -144,7 +144,14 @@ export class OutboundService {
         resultTokens.push(result);
       }
 
-      return resultTokens as UnregisterOutputPortDto;
+      return resultTokens.map((resultToken) => {
+        const outputDto = new UnregisterOutputPortDto();
+        outputDto.identifier = resultToken.identifier;
+        outputDto.token = resultToken.token;
+        outputDto.platform = resultToken.platform;
+        outputDto.status = resultToken.status;
+        return outputDto;
+      });
     } catch (error) {
       console.error('Error unregister token:', error);
       throw toException(
@@ -157,19 +164,19 @@ export class OutboundService {
   async findTokenAll(
     dto: FindTokenInputPortDto,
     isRPC: boolean,
-  ): Promise<FindTokenOutputPortDto> {
+  ): Promise<FindTokenOutputPortDto[]> {
     try {
       const tokens: Token[] = await this.tokenRepository.findBy({
         identifier: dto.identifier,
       });
 
       return tokens.map((token) => {
-        return {
-          identifier: token.identifier,
-          token: token.token,
-          platform: getPlatformEnum(token.platform),
-          status: getTokenStatusEnum(token.status),
-        };
+        const dto = new FindTokenOutputPortDto();
+        dto.identifier = token.identifier;
+        dto.token = token.token;
+        dto.platform = getPlatformEnum(token.platform);
+        dto.status = getTokenStatusEnum(token.status);
+        return dto;
       });
     } catch (error) {
       console.error('Error findTokenAll:', error);
@@ -183,7 +190,7 @@ export class OutboundService {
   async sendMessage(
     dto: SendMessageInputPortDto,
     isRPC: boolean,
-  ): Promise<SendMessageOutputPortDto> {
+  ): Promise<SendMessageOutputPortDto[]> {
     try {
       // Data Object to String
       let messageData: string;
@@ -215,11 +222,13 @@ export class OutboundService {
         const identifier = messageLog.identifier;
         const token = messageLog.token;
         const state = messageLog.state;
-        return {
-          identifier: identifier,
-          token: token,
-          messageStatus: state,
-        };
+
+        const outputDto = new SendMessageOutputPortDto();
+        outputDto.identifier = identifier;
+        outputDto.token = token;
+        outputDto.messageStatus = state;
+
+        return outputDto;
       });
     } catch (error) {
       console.error('Error sendMessage:', error);

@@ -4,92 +4,175 @@ import {
   Platform,
   TokenStatus,
 } from '@app/commons';
+import { ApiProperty } from '@nestjs/swagger';
 
 /// Input Port
 
-export type RegisterInputPortDto = {
+export class RegisterInputPortDto {
+  @ApiProperty()
   identifier: string;
+
+  @ApiProperty()
   token: string;
+
+  @ApiProperty({
+    enum: [...Object.keys(Platform)],
+    enumName: 'Platform',
+  })
   platform?: Platform;
-};
+}
 
-export type UnregisterInputPortDto = {
+export class UnregisterInputPortDto {
+  @ApiProperty()
   identifier: string;
-  token?: string;
-};
 
-export type SendMessageInputPortDto = {
-  identifier: string;
+  @ApiProperty()
   token?: string;
+}
+
+export class SendMessageInputPortDto {
+  @ApiProperty()
+  identifier: string;
+
+  @ApiProperty()
+  token?: string;
+
+  @ApiProperty()
   title?: string;
+
+  @ApiProperty()
   message: string;
+
+  @ApiProperty()
   data?: object;
-};
+}
 
-export type FindTokenInputPortDto = {
+export class FindTokenInputPortDto {
+  @ApiProperty()
   identifier: string;
-};
+}
 
-export type FirebaseSendMessageInputPortDto = {
+export class FirebaseSendMessageInputPortDto {
+  @ApiProperty()
   token: string;
+
+  @ApiProperty()
   title?: string;
+
+  @ApiProperty()
   message: string;
+
+  @ApiProperty()
   data?: object;
-};
+}
 
 /// Output Port
 
-export type RegisterEmptyOutputPortDto = void;
-
-export type RegisterOutputPortDto = {
+export class RegisterOutputPortDto {
+  @ApiProperty()
   identifier: string;
+
+  @ApiProperty()
   token: string;
+
+  @ApiProperty({
+    enum: [...Object.keys(Platform)],
+    enumName: 'Platform',
+  })
   platform?: Platform;
-  status?: TokenStatus;
-};
 
-export type UnregisterOutputPortDto = Array<{
+  @ApiProperty({
+    enum: [...Object.keys(TokenStatus)],
+    enumName: 'TokenStatus',
+  })
+  status?: TokenStatus;
+}
+
+export class UnregisterOutputPortDto {
+  @ApiProperty()
   identifier: string;
+
+  @ApiProperty()
   token: string;
+
+  @ApiProperty({
+    enum: [...Object.keys(Platform)],
+    enumName: 'Platform',
+  })
   platform?: Platform;
-  status?: TokenStatus;
-}>;
 
-export type FindTokenOutputPortDto = Array<{
+  @ApiProperty({
+    enum: [...Object.keys(TokenStatus)],
+    enumName: 'TokenStatus',
+  })
+  status?: TokenStatus;
+}
+
+export class FindTokenOutputPortDto {
+  @ApiProperty()
   identifier: string;
+
+  @ApiProperty()
   token: string;
+
+  @ApiProperty({
+    enum: [...Object.keys(Platform)],
+    enumName: 'Platform',
+  })
   platform?: Platform;
-  status?: TokenStatus;
-}>;
 
-export type SendMessageOutputPortDto = Array<{
+  @ApiProperty({
+    enum: [...Object.keys(TokenStatus)],
+    enumName: 'TokenStatus',
+  })
+  status?: TokenStatus;
+}
+
+export class SendMessageOutputPortDto {
+  @ApiProperty()
   identifier: string;
+
+  @ApiProperty()
   token: string;
+
+  @ApiProperty({
+    enum: [...Object.keys(MessageStatus)],
+    enumName: 'MessageStatus',
+  })
   messageStatus?: MessageStatus;
-}>;
+}
 
-export type FirebaseSendMessageOutputPortDto = {
+export class FirebaseSendMessageOutputPortDto {
+  @ApiProperty()
   token: string;
+
+  @ApiProperty()
   errorCode?: string;
+
+  @ApiProperty({
+    enum: [...Object.keys(FirebaseMessageStatus)],
+    enumName: 'FirebaseMessageStatus',
+  })
   status: FirebaseMessageStatus;
-};
+}
 
 /// Interface
 
 export interface TokenPort {
   register(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto>;
 
-  unregister(dto: UnregisterInputPortDto): Promise<UnregisterOutputPortDto>;
+  unregister(dto: UnregisterInputPortDto): Promise<UnregisterOutputPortDto[]>;
 
-  findTokenAll(dto: FindTokenInputPortDto): Promise<FindTokenOutputPortDto>;
+  findTokenAll(dto: FindTokenInputPortDto): Promise<FindTokenOutputPortDto[]>;
 }
 
 export interface SendPort {
-  sendMessage(dto: SendMessageInputPortDto): Promise<SendMessageOutputPortDto>;
+  sendMessage(
+    dto: SendMessageInputPortDto,
+  ): Promise<SendMessageOutputPortDto[]>;
 }
 
 /// Utils
-
 /// Data Object to String
 export function getMessageDataFrom(dto: SendMessageInputPortDto): string {
   const title = dto.title;

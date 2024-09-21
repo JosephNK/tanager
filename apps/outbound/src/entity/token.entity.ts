@@ -13,7 +13,7 @@ export class Token extends BaseEntity {
   token: string;
 
   @Column({ type: 'varchar', default: Platform.NONE })
-  platform: string;
+  platform: Platform;
 
   @Column({ type: 'varchar', default: TokenStatus.ISSUED })
   status: TokenStatus;
