@@ -1,6 +1,10 @@
 # Tanager
 
-[Tanager](https://github.com/JosephNK/tanager) framework TypeScript starter repository.
+[Tanager](https://github.com/JosephNK/tanager) framework is a project designed for sending message with precision and vibrancy—much like the Tanager bird, known for its striking colors and clear calls that capture attention. Just as the bird ensures its message is heard in the natural world, our system ensures that your important messages reach their recipients swiftly and effectively.
+
+## Features
+
+- Firebase Push Notifications
 
 ## Setup .env
 
