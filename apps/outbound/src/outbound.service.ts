@@ -42,27 +42,7 @@ export class OutboundService {
   ): Promise<RegisterOutputPortDto> {
     try {
       // 타사용자 기존 Token Status 변경 (=> USED)
-      const otherVaildTokens: Token[] = await this.tokenRepository.find({
-        where: [
-          {
-            identifier: Not(dto.identifier),
-            token: dto.token,
-            status: TokenStatus.ISSUED,
-          },
-          {
-            identifier: Not(dto.identifier),
-            token: dto.token,
-            status: TokenStatus.VAILD,
-          },
-        ],
-      });
-      for (const token of otherVaildTokens) {
-        const id = token.id;
-        await this.tokenRepository.update(id, {
-          status: TokenStatus.USED,
-          updateAt: new Date(),
-        });
-      }
+      await this.setOtherTokenStatusUsed(dto);
 
       // Insert Or Update
       const token: Token = new Token();
@@ -104,12 +84,13 @@ export class OutboundService {
       //   .orUpdate(['token', 'updateAt'], ['token'])
       //   .execute();
 
-      return {
-        identifier: result.identifier,
-        token: result.token,
-        platform: result.platform,
-        status: getTokenStatusEnum(result.status),
-      } as RegisterOutputPortDto;
+      const outputDto = new RegisterOutputPortDto();
+      outputDto.identifier = result.identifier;
+      outputDto.token = result.token;
+      outputDto.platform = result.platform;
+      outputDto.status = getTokenStatusEnum(result.status);
+
+      return outputDto;
     } catch (error) {
       console.error('Error register token:', error);
       throw toException(
@@ -129,20 +110,21 @@ export class OutboundService {
         token: dto.token,
       });
 
-      const resultTokens: Token[] = [];
-      for (const token of tokens) {
-        const id = token.id;
-        await this.tokenRepository.update(id, {
-          status: TokenStatus.REVOKED,
-          deleteAt: new Date(),
-        });
-        const result = await this.tokenRepository.findOneOrFail({
-          where: {
-            id: id,
-          },
-        });
-        resultTokens.push(result);
-      }
+      const resultTokens: Token[] = await Promise.all(
+        tokens.map(async (token) => {
+          const id = token.id;
+          await this.tokenRepository.update(id, {
+            status: TokenStatus.REVOKED,
+            deleteAt: new Date(),
+          });
+          const result = await this.tokenRepository.findOneOrFail({
+            where: {
+              id: id,
+            },
+          });
+          return result;
+        }),
+      );
 
       return resultTokens.map((resultToken) => {
         const outputDto = new UnregisterOutputPortDto();
@@ -234,6 +216,35 @@ export class OutboundService {
       console.error('Error sendMessage:', error);
       throw toException(error, isRPC);
     }
+  }
+
+  /// Private
+
+  private async setOtherTokenStatusUsed(
+    dto: RegisterInputPortDto,
+  ): Promise<Token[]> {
+    const otherVaildTokens: Token[] = await this.tokenRepository.find({
+      where: [
+        {
+          identifier: Not(dto.identifier),
+          token: dto.token,
+          status: TokenStatus.ISSUED,
+        },
+        {
+          identifier: Not(dto.identifier),
+          token: dto.token,
+          status: TokenStatus.VAILD,
+        },
+      ],
+    });
+    for (const token of otherVaildTokens) {
+      const id = token.id;
+      await this.tokenRepository.update(id, {
+        status: TokenStatus.USED,
+        updateAt: new Date(),
+      });
+    }
+    return otherVaildTokens;
   }
 
   private async getVaildTokensFrom(
