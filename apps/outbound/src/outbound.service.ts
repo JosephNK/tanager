@@ -16,9 +16,10 @@ import {
 } from '@app/commons';
 import { Token } from './entity/token.entity';
 import {
+  DatabaseTokenNotFoundException,
   DatabaseTokenRegisterException,
   DatabaseTokenUnregisterException,
-  FirebaseSendException,
+  FirebaseMessageSendException,
   toException,
 } from '@app/exceptions';
 import { FirebaseService } from './firebase/firebase.service';
@@ -173,6 +174,10 @@ export class OutboundService {
         ],
       });
 
+      if (tokens.length == 0) {
+        throw new DatabaseTokenNotFoundException();
+      }
+
       const messageResults: FirebaseSendMessageOutputPortDto[] = [];
       for (const token of tokens) {
         const result = await this.firebaseService.sendMessage({
@@ -191,13 +196,14 @@ export class OutboundService {
         console.log('errorCode', errorCode);
 
         if (errorCode) {
-          errorMessages.push(`token: ${token}, errorCode: ${errorCode}`);
+          const errorMessage = `token: ${token}, errorCode: ${errorCode}`;
+          errorMessages.push(errorMessage);
         }
       }
 
       if (errorMessages.length > 0) {
         const message = errorMessages.join('/n');
-        throw new FirebaseSendException(message);
+        throw new FirebaseMessageSendException(message);
       }
 
       return [];

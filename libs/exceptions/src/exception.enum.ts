@@ -15,8 +15,21 @@ export enum RequestDataExceptionCodeEnum {
 export enum DatabaseExceptionCodeEnum {
   FailedRegister = '30000',
   FailedUnregister = '30001',
+  TokenNotFound = '30002',
 }
 
 export enum FirebaseExceptionCodeEnum {
-  FailedSend = '40000',
+  FailedMessageSend = '40000',
+}
+
+export enum ExceptionErrorMessage {
+  Undefined = 'Undefined Error',
+  InvalidContentType = 'Invalid Content-Type',
+  IdentifierEmpty = 'Identifier must not be empty',
+  TokenEmpty = 'Token must not be empty',
+  MessageEmpty = 'Message must not be empty',
+  FailedToTokenRegister = 'Failed to Token Register',
+  TokenNotFound = 'Token Not Found',
+  FailedToTokenUnregister = 'Failed to Token Unregister',
+  FailedToFirebaseMessageSend = 'Failed to Firebase Message Send',
 }

@@ -7,6 +7,7 @@ import {
   ContentTypeExceptionCodeEnum,
   DatabaseExceptionCodeEnum,
   FirebaseExceptionCodeEnum,
+  ExceptionErrorMessage,
 } from './exception.enum';
 
 export class UndefinedException extends BaseException {
@@ -14,7 +15,7 @@ export class UndefinedException extends BaseException {
     super(
       UndefinedExceptionCodeEnum.Undefined,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      'Undefined Error',
+      ExceptionErrorMessage.Undefined,
     );
   }
 }
@@ -24,7 +25,7 @@ export class ContentTypeInvalidException extends BaseException {
     super(
       ContentTypeExceptionCodeEnum.Invalid,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      'Invalid Content-Type',
+      ExceptionErrorMessage.InvalidContentType,
     );
   }
 }
@@ -34,7 +35,7 @@ export class IdentifierNotFoundException extends BaseException {
     super(
       RequestDataExceptionCodeEnum.IdentifierNotFound,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      'Identifier must not be empty',
+      ExceptionErrorMessage.IdentifierEmpty,
     );
   }
 }
@@ -44,7 +45,7 @@ export class TokenNotFoundException extends BaseException {
     super(
       RequestDataExceptionCodeEnum.TokenNotFound,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      'Token must not be empty',
+      ExceptionErrorMessage.TokenEmpty,
     );
   }
 }
@@ -54,7 +55,7 @@ export class MessageNotFoundException extends BaseException {
     super(
       RequestDataExceptionCodeEnum.MessageNotFound,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      'Message must not be empty',
+      ExceptionErrorMessage.MessageEmpty,
     );
   }
 }
@@ -64,8 +65,21 @@ export class DatabaseTokenRegisterException extends BaseException {
     super(
       DatabaseExceptionCodeEnum.FailedRegister,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      `Failed to Token Register Detail is ${errorMessage}` ??
-        'Failed to Token Register',
+      errorMessage
+        ? `${ExceptionErrorMessage.FailedToTokenRegister} :: ${errorMessage}`
+        : ExceptionErrorMessage.FailedToTokenRegister,
+    );
+  }
+}
+
+export class DatabaseTokenNotFoundException extends BaseException {
+  constructor(errorMessage?: string) {
+    super(
+      DatabaseExceptionCodeEnum.TokenNotFound,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      errorMessage
+        ? `${ExceptionErrorMessage.TokenNotFound} :: ${errorMessage}`
+        : ExceptionErrorMessage.TokenNotFound,
     );
   }
 }
@@ -75,19 +89,21 @@ export class DatabaseTokenUnregisterException extends BaseException {
     super(
       DatabaseExceptionCodeEnum.FailedUnregister,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      `Failed to Token Unregister Detail is ${errorMessage}` ??
-        'Failed to Token Unregister',
+      errorMessage
+        ? `${ExceptionErrorMessage.FailedToTokenUnregister} :: ${errorMessage}`
+        : ExceptionErrorMessage.FailedToTokenUnregister,
     );
   }
 }
 
-export class FirebaseSendException extends BaseException {
+export class FirebaseMessageSendException extends BaseException {
   constructor(errorMessage?: string) {
     super(
-      FirebaseExceptionCodeEnum.FailedSend,
+      FirebaseExceptionCodeEnum.FailedMessageSend,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      `Failed to Firebase Send Detail is ${errorMessage}` ??
-        'Failed to Firebase Send',
+      errorMessage
+        ? `${ExceptionErrorMessage.FailedToFirebaseMessageSend} :: ${errorMessage}`
+        : ExceptionErrorMessage.FailedToFirebaseMessageSend,
     );
   }
 }
