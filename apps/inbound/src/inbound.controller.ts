@@ -8,6 +8,7 @@ import {
   FindTokenInputPortDto,
   TokenPort,
   RegisterEmptyOutputPortDto,
+  UnregisterOutputPortDto,
 } from '@app/commons';
 
 /// Adapter
@@ -18,19 +19,20 @@ export class InboundController implements TokenPort {
   // RESTful
 
   @Post('register')
-  resigter(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+  register(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
     return this.service.register(dto, false);
   }
 
   @Post('unregister')
-  unresigter(dto: UnregisterInputPortDto): Promise<RegisterEmptyOutputPortDto> {
-    console.log('dto', dto);
-    throw new Error('Method not implemented.');
+  unregister(
+    @Body() dto: UnregisterInputPortDto,
+  ): Promise<UnregisterOutputPortDto> {
+    return this.service.unregister(dto, false);
   }
 
   @Get('findTokenAll')
   findTokenAll(
-    dto: FindTokenInputPortDto,
+    @Query() dto: FindTokenInputPortDto,
   ): Promise<RegisterEmptyOutputPortDto> {
     console.log('dto', dto);
     throw new Error('Method not implemented.');
@@ -45,15 +47,14 @@ export class InboundController implements TokenPort {
 
   @MessagePattern({ cmd: 'unregister' })
   unregisterStream(
-    @Body() dto: UnregisterInputPortDto,
-  ): Promise<RegisterEmptyOutputPortDto> {
-    console.log('dto', dto);
-    throw new Error('Method not implemented.');
+    dto: UnregisterInputPortDto,
+  ): Promise<UnregisterOutputPortDto> {
+    return this.service.unregister(dto, true);
   }
 
   @MessagePattern({ cmd: 'findTokenAll' })
   findTokenAllStream(
-    @Query() dto: FindTokenInputPortDto,
+    dto: FindTokenInputPortDto,
   ): Promise<RegisterEmptyOutputPortDto> {
     console.log('dto', dto);
     throw new Error('Method not implemented.');

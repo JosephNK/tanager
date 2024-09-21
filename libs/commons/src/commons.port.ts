@@ -1,4 +1,4 @@
-import { Platform } from '@app/commons';
+import { Platform, TokenStatus } from '@app/commons';
 
 /// Input Port
 
@@ -32,14 +32,22 @@ export type RegisterOutputPortDto = {
   identifier: string;
   token: string;
   platform?: Platform;
+  status?: TokenStatus;
 };
+
+export type UnregisterOutputPortDto = Array<{
+  identifier: string;
+  token: string;
+  platform?: Platform;
+  status?: TokenStatus;
+}>;
 
 ///
 
 export interface TokenPort {
-  resigter(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto>;
+  register(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto>;
 
-  unresigter(dto: UnregisterInputPortDto): Promise<RegisterEmptyOutputPortDto>;
+  unregister(dto: UnregisterInputPortDto): Promise<UnregisterOutputPortDto>;
 
   findTokenAll(dto: FindTokenInputPortDto): Promise<RegisterEmptyOutputPortDto>;
 }

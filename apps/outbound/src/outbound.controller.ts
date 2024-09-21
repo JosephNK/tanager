@@ -8,6 +8,7 @@ import {
   TokenPort,
   RegisterOutputPortDto,
   RegisterEmptyOutputPortDto,
+  UnregisterOutputPortDto,
 } from '@app/commons';
 
 @Controller()
@@ -17,14 +18,15 @@ export class OutboundController implements TokenPort {
   // RESTful
 
   @Post('register')
-  resigter(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+  register(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
     return this.service.register(dto, false);
   }
 
-  @Post('unresigter')
-  unresigter(dto: UnregisterInputPortDto): Promise<RegisterEmptyOutputPortDto> {
-    console.log('dto', dto);
-    throw new Error('Method not implemented.');
+  @Post('unregister')
+  unregister(
+    @Body() dto: UnregisterInputPortDto,
+  ): Promise<UnregisterOutputPortDto> {
+    return this.service.unregister(dto, false);
   }
 
   @Get('findTokenAll')
@@ -45,9 +47,8 @@ export class OutboundController implements TokenPort {
   @MessagePattern({ cmd: 'unregister' })
   unregisterStream(
     @Body() dto: UnregisterInputPortDto,
-  ): Promise<RegisterEmptyOutputPortDto> {
-    console.log('dto', dto);
-    throw new Error('Method not implemented.');
+  ): Promise<UnregisterOutputPortDto> {
+    return this.service.unregister(dto, true);
   }
 
   @MessagePattern({ cmd: 'findTokenAll' })

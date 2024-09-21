@@ -19,7 +19,15 @@ export enum Platform {
   WEB = 'WEB',
 }
 
-export function getPlatformEnum(value: string) {
+export function getTokenStatusEnum(value: string): TokenStatus | null {
+  value = value.toUpperCase();
+  if (Object.values(TokenStatus).includes(value as TokenStatus)) {
+    return value as TokenStatus;
+  }
+  return null;
+}
+
+export function getPlatformEnum(value: string): Platform {
   value = value.toUpperCase();
   if (Object.values(Platform).includes(value as Platform)) {
     return value as Platform;

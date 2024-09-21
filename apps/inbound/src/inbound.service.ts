@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { getPlatformEnum } from '@app/commons';
+import { getPlatformEnum, UnregisterOutputPortDto } from '@app/commons';
 import {
   RegisterInputPortDto,
   RegisterOutputPortDto,
@@ -39,8 +39,25 @@ export class InboundService {
     }
   }
 
-  unregister(dto: UnregisterInputPortDto): string {
-    return `Hello World! ${dto.token}`;
+  async unregister(
+    dto: UnregisterInputPortDto,
+    isRPC: boolean,
+  ): Promise<UnregisterOutputPortDto> {
+    try {
+      const identifier = dto.identifier;
+      const token = dto.token;
+      if (!identifier) {
+        throw toException(new IdentifierNotFoundException(), isRPC);
+      }
+      return [
+        {
+          identifier: identifier,
+          token: token,
+        },
+      ] as UnregisterOutputPortDto;
+    } catch (error) {
+      throw error;
+    }
   }
 
   findTokenAll(dto: FindTokenInputPortDto): string {

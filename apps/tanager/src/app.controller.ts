@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import {
   ContentTypeApplicationJsonGuard,
   FindTokenInputPortDto,
@@ -7,6 +7,7 @@ import {
   RegisterOutputPortDto,
   TokenPort,
   UnregisterInputPortDto,
+  UnregisterOutputPortDto,
 } from '@app/commons';
 import { AppService } from './app.service';
 
@@ -18,15 +19,18 @@ export class AppController implements TokenPort {
 
   @Post('register')
   @UseGuards(ContentTypeApplicationJsonGuard)
-  resigter(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+  register(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
     return this.appService.register(dto);
   }
 
-  unresigter(dto: UnregisterInputPortDto): Promise<RegisterEmptyOutputPortDto> {
-    console.log('dto', dto);
-    throw new Error('Method not implemented.');
+  @Post('unregister')
+  unregister(
+    @Body() dto: UnregisterInputPortDto,
+  ): Promise<UnregisterOutputPortDto> {
+    return this.appService.unregister(dto);
   }
 
+  @Get('findTokenAll')
   findTokenAll(
     dto: FindTokenInputPortDto,
   ): Promise<RegisterEmptyOutputPortDto> {

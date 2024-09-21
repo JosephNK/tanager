@@ -48,13 +48,24 @@ export class TokenNotFoundException extends BaseException {
   }
 }
 
-export class DatabaseTokenSaveException extends BaseException {
+export class DatabaseTokenRegisterException extends BaseException {
   constructor(errorMessage?: string) {
     super(
-      DatabaseExceptionCodeEnum.FailedSave,
+      DatabaseExceptionCodeEnum.FailedRegister,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      `Failed to Token Save Detail is ${errorMessage}` ??
-        'Failed to Token Save',
+      `Failed to Token Register Detail is ${errorMessage}` ??
+        'Failed to Token Register',
+    );
+  }
+}
+
+export class DatabaseTokenUnregisterException extends BaseException {
+  constructor(errorMessage?: string) {
+    super(
+      DatabaseExceptionCodeEnum.FailedUnregister,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      `Failed to Token Unregister Detail is ${errorMessage}` ??
+        'Failed to Token Unregister',
     );
   }
 }

@@ -9,7 +9,7 @@ export class Token extends BaseEntity {
   @Column({ type: 'varchar' })
   identifier: string;
 
-  @Column({ type: 'varchar', unique: true })
+  @Column({ type: 'varchar' })
   token: string;
 
   @Column({ type: 'timestamptz', default: new Date() })

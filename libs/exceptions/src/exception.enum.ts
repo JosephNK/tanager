@@ -12,5 +12,6 @@ export enum RequestDataExceptionCodeEnum {
 }
 
 export enum DatabaseExceptionCodeEnum {
-  FailedSave = '30000',
+  FailedRegister = '30000',
+  FailedUnregister = '30001',
 }
