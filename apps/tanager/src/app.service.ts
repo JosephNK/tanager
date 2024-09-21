@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import {
   RegisterInputPortDto,
   RegisterOutputPortDto,
+  SendMessageInputPortDto,
+  SendMessageOutputPortDto,
   UnregisterInputPortDto,
   UnregisterOutputPortDto,
 } from '@app/commons';
@@ -59,6 +61,21 @@ export class AppService {
     return await lastValueFrom(
       this.outboundClient
         .send<UnregisterOutputPortDto>({ cmd: 'unregister' }, dto)
+        .pipe(catchError((error) => throwError(() => new RpcException(error)))),
+    );
+  }
+
+  async sendMessage(
+    dto: SendMessageInputPortDto,
+  ): Promise<SendMessageOutputPortDto> {
+    await lastValueFrom(
+      this.inboundClient
+        .send<SendMessageOutputPortDto>({ cmd: 'sendMessage' }, dto)
+        .pipe(catchError((error) => throwError(() => new RpcException(error)))),
+    );
+    return await lastValueFrom(
+      this.outboundClient
+        .send<SendMessageOutputPortDto>({ cmd: 'sendMessage' }, dto)
         .pipe(catchError((error) => throwError(() => new RpcException(error)))),
     );
   }

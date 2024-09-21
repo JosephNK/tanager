@@ -6,6 +6,7 @@ import {
   RequestDataExceptionCodeEnum,
   ContentTypeExceptionCodeEnum,
   DatabaseExceptionCodeEnum,
+  FirebaseExceptionCodeEnum,
 } from './exception.enum';
 
 export class UndefinedException extends BaseException {
@@ -48,6 +49,16 @@ export class TokenNotFoundException extends BaseException {
   }
 }
 
+export class MessageNotFoundException extends BaseException {
+  constructor() {
+    super(
+      RequestDataExceptionCodeEnum.MessageNotFound,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      'Message must not be empty',
+    );
+  }
+}
+
 export class DatabaseTokenRegisterException extends BaseException {
   constructor(errorMessage?: string) {
     super(
@@ -66,6 +77,17 @@ export class DatabaseTokenUnregisterException extends BaseException {
       HttpStatus.INTERNAL_SERVER_ERROR,
       `Failed to Token Unregister Detail is ${errorMessage}` ??
         'Failed to Token Unregister',
+    );
+  }
+}
+
+export class FirebaseSendException extends BaseException {
+  constructor(errorMessage?: string) {
+    super(
+      FirebaseExceptionCodeEnum.FailedSend,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      `Failed to Firebase Send Detail is ${errorMessage}` ??
+        'Failed to Firebase Send',
     );
   }
 }

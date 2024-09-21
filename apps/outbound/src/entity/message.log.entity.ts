@@ -1,8 +1,8 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { TokenStatus, Platform } from '@app/commons';
+import { MessageStatus, Provider } from '@app/commons';
 
 @Entity()
-export class Token extends BaseEntity {
+export class MessageLog extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -12,11 +12,14 @@ export class Token extends BaseEntity {
   @Column({ type: 'varchar' })
   token: string;
 
-  @Column({ type: 'varchar', default: Platform.NONE })
-  platform: string;
+  @Column({ type: 'varchar', default: Provider.NONE })
+  provider: string;
 
-  @Column({ type: 'varchar', default: TokenStatus.ISSUED })
-  status: TokenStatus;
+  @Column({ type: 'varchar', default: MessageStatus.PENDING })
+  state: MessageStatus;
+
+  @Column({ type: 'varchar', nullable: true })
+  errorCode: string;
 
   @Column({ type: 'timestamptz', default: new Date() })
   createAt: Date;

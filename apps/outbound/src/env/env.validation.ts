@@ -46,6 +46,9 @@ class EnvironmentVariables {
 
   @IsString()
   DATABASE_NAME: string;
+
+  @IsString()
+  FIREBASE_SERVICE_KEY_FILE: string;
 }
 
 export function validate(config: Record<string, unknown>) {

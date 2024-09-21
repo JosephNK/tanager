@@ -5,6 +5,9 @@ import {
   RegisterEmptyOutputPortDto,
   RegisterInputPortDto,
   RegisterOutputPortDto,
+  SendMessageInputPortDto,
+  SendMessageOutputPortDto,
+  SendPort,
   TokenPort,
   UnregisterInputPortDto,
   UnregisterOutputPortDto,
@@ -12,7 +15,7 @@ import {
 import { AppService } from './app.service';
 
 @Controller()
-export class AppController implements TokenPort {
+export class AppController implements TokenPort, SendPort {
   constructor(private readonly appService: AppService) {}
 
   // RESTful
@@ -36,5 +39,12 @@ export class AppController implements TokenPort {
   ): Promise<RegisterEmptyOutputPortDto> {
     console.log('dto', dto);
     throw new Error('Method not implemented.');
+  }
+
+  @Post('sendMessage')
+  sendMessage(
+    @Body() dto: SendMessageInputPortDto,
+  ): Promise<SendMessageOutputPortDto> {
+    return this.appService.sendMessage(dto);
   }
 }

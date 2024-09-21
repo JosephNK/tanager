@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { getPlatformEnum, UnregisterOutputPortDto } from '@app/commons';
+import {
+  getPlatformEnum,
+  SendMessageInputPortDto,
+  SendMessageOutputPortDto,
+  UnregisterOutputPortDto,
+} from '@app/commons';
 import {
   RegisterInputPortDto,
   RegisterOutputPortDto,
@@ -8,6 +13,7 @@ import {
 } from '@app/commons';
 import {
   IdentifierNotFoundException,
+  MessageNotFoundException,
   TokenNotFoundException,
   toException,
 } from '@app/exceptions';
@@ -62,5 +68,24 @@ export class InboundService {
 
   findTokenAll(dto: FindTokenInputPortDto): string {
     return `Hello World! ${dto.identifier}`;
+  }
+
+  async sendMessage(
+    dto: SendMessageInputPortDto,
+    isRPC: boolean,
+  ): Promise<SendMessageOutputPortDto> {
+    try {
+      const identifier = dto.identifier;
+      const message = dto.message;
+      if (!identifier) {
+        throw toException(new IdentifierNotFoundException(), isRPC);
+      }
+      if (!message) {
+        throw toException(new MessageNotFoundException(), isRPC);
+      }
+      return [dto] as SendMessageOutputPortDto;
+    } catch (error) {
+      throw error;
+    }
   }
 }

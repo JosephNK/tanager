@@ -24,6 +24,12 @@ export type FindTokenInputPortDto = {
   identifier: string;
 };
 
+export type FirebaseSendMessageInputPortDto = {
+  token: string;
+  title?: string;
+  message: string;
+};
+
 /// Output Port
 
 export type RegisterEmptyOutputPortDto = void;
@@ -42,6 +48,19 @@ export type UnregisterOutputPortDto = Array<{
   status?: TokenStatus;
 }>;
 
+export type SendMessageOutputPortDto = Array<{
+  identifier: string;
+  token: string;
+  platform?: Platform;
+  status?: TokenStatus;
+}>;
+
+export type FirebaseSendMessageOutputPortDto = {
+  token: string;
+  response?: any;
+  errorCode?: string;
+};
+
 ///
 
 export interface TokenPort {
@@ -53,5 +72,5 @@ export interface TokenPort {
 }
 
 export interface SendPort {
-  sendMessage(dto: SendMessageInputPortDto): RegisterEmptyOutputPortDto;
+  sendMessage(dto: SendMessageInputPortDto): Promise<SendMessageOutputPortDto>;
 }

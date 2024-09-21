@@ -7,6 +7,8 @@ import { validate } from './env/env.validation';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { TypeormConfig } from './database/typeorm.config';
 import { Token } from './entity/token.entity';
+import { FirebaseService } from './firebase/firebase.service';
+import { MessageLog } from './entity/message.log.entity';
 
 @Module({
   imports: [
@@ -21,9 +23,9 @@ import { Token } from './entity/token.entity';
         return new DataSource(options).initialize();
       },
     }),
-    TypeOrmModule.forFeature([Token]),
+    TypeOrmModule.forFeature([Token, MessageLog]),
   ],
   controllers: [OutboundController],
-  providers: [OutboundService],
+  providers: [OutboundService, FirebaseService],
 })
 export class OutboundModule {}

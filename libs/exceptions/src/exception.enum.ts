@@ -9,9 +9,14 @@ export enum ContentTypeExceptionCodeEnum {
 export enum RequestDataExceptionCodeEnum {
   IdentifierNotFound = '20000',
   TokenNotFound = '20001',
+  MessageNotFound = '20002',
 }
 
 export enum DatabaseExceptionCodeEnum {
   FailedRegister = '30000',
   FailedUnregister = '30001',
+}
+
+export enum FirebaseExceptionCodeEnum {
+  FailedSend = '40000',
 }

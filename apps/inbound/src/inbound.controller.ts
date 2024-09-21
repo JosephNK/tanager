@@ -9,11 +9,14 @@ import {
   TokenPort,
   RegisterEmptyOutputPortDto,
   UnregisterOutputPortDto,
+  SendMessageInputPortDto,
+  SendPort,
+  SendMessageOutputPortDto,
 } from '@app/commons';
 
 /// Adapter
 @Controller()
-export class InboundController implements TokenPort {
+export class InboundController implements TokenPort, SendPort {
   constructor(private readonly service: InboundService) {}
 
   // RESTful
@@ -38,6 +41,13 @@ export class InboundController implements TokenPort {
     throw new Error('Method not implemented.');
   }
 
+  @Post('sendMessage')
+  async sendMessage(
+    @Body() dto: SendMessageInputPortDto,
+  ): Promise<SendMessageOutputPortDto> {
+    return this.service.sendMessage(dto, false);
+  }
+
   // MessagePattern
 
   @MessagePattern({ cmd: 'register' })
@@ -58,5 +68,12 @@ export class InboundController implements TokenPort {
   ): Promise<RegisterEmptyOutputPortDto> {
     console.log('dto', dto);
     throw new Error('Method not implemented.');
+  }
+
+  @MessagePattern({ cmd: 'sendMessage' })
+  sendMessageStream(
+    dto: SendMessageInputPortDto,
+  ): Promise<SendMessageOutputPortDto> {
+    return this.service.sendMessage(dto, true);
   }
 }

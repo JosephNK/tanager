@@ -10,19 +10,25 @@ import {
   getTokenStatusEnum,
   UnregisterOutputPortDto,
   TokenStatus,
+  SendMessageInputPortDto,
+  SendMessageOutputPortDto,
+  FirebaseSendMessageOutputPortDto,
 } from '@app/commons';
 import { Token } from './entity/token.entity';
 import {
   DatabaseTokenRegisterException,
   DatabaseTokenUnregisterException,
+  FirebaseSendException,
   toException,
 } from '@app/exceptions';
+import { FirebaseService } from './firebase/firebase.service';
 
 @Injectable()
 export class OutboundService {
   constructor(
     @InjectRepository(Token)
     private readonly tokenRepository: Repository<Token>,
+    private readonly firebaseService: FirebaseService,
   ) {}
 
   async register(
@@ -145,5 +151,59 @@ export class OutboundService {
 
   findTokenAll(dto: FindTokenInputPortDto): string {
     return `Hello World! ${dto.identifier}`;
+  }
+
+  async sendMessage(
+    dto: SendMessageInputPortDto,
+    isRPC: boolean,
+  ): Promise<SendMessageOutputPortDto> {
+    try {
+      const tokens: Token[] = await this.tokenRepository.find({
+        where: [
+          {
+            identifier: dto.identifier,
+            token: dto.token,
+            status: TokenStatus.ISSUED,
+          },
+          {
+            identifier: dto.identifier,
+            token: dto.token,
+            status: TokenStatus.VAILD,
+          },
+        ],
+      });
+
+      const messageResults: FirebaseSendMessageOutputPortDto[] = [];
+      for (const token of tokens) {
+        const result = await this.firebaseService.sendMessage({
+          token: token.token,
+          title: dto.token,
+          message: dto.message,
+        });
+        messageResults.push(result);
+      }
+
+      const errorMessages: string[] = [];
+      for (const messageResult of messageResults) {
+        const token = messageResult.token;
+        const response = messageResult.response;
+        const errorCode = messageResult.errorCode;
+        console.log('errorCode', errorCode);
+
+        if (errorCode) {
+          errorMessages.push(`token: ${token}, errorCode: ${errorCode}`);
+        }
+      }
+
+      if (errorMessages.length > 0) {
+        const message = errorMessages.join('/n');
+        throw new FirebaseSendException(message);
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Error unregister token:', error);
+      throw toException(error, isRPC);
+    }
   }
 }
