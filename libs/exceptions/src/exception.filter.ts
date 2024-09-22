@@ -7,7 +7,11 @@ import {
 import { RpcException } from '@nestjs/microservices';
 import { BaseException } from './base.exception.interface';
 import { UndefinedException } from './exception';
-import { FailedCommonResponse, ErrorResponseData } from '@app/commons';
+import {
+  FailedCommonResponse,
+  ErrorResponseData,
+  MyLoggerService,
+} from '@app/commons';
 
 class ErrorResponse {
   error: object;
@@ -53,6 +57,8 @@ export class TanagerExceptionFilter implements ExceptionFilter {
 
 @Catch(RpcException)
 export class RpcExceptionFilter implements ExceptionFilter {
+  constructor(private readonly logger: MyLoggerService) {}
+
   catch(exception: RpcException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
@@ -65,6 +71,8 @@ export class RpcExceptionFilter implements ExceptionFilter {
 
     const faildResponse = new FailedCommonResponse();
     const errorResponse = new ErrorResponseData();
+
+    this.logger.error('RpcExceptionFilter Error', error);
 
     if (status === 'error') {
       errorResponse.errorCode = '99999';

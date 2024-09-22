@@ -9,6 +9,7 @@ import { TypeormConfig } from './database/typeorm.config';
 import { Token } from './entity/token.entity';
 import { FirebaseService } from './firebase/firebase.service';
 import { MessageLog } from './entity/message.log.entity';
+import { MyLoggerModule } from '@app/commons';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { MessageLog } from './entity/message.log.entity';
       },
     }),
     TypeOrmModule.forFeature([Token, MessageLog]),
+    MyLoggerModule,
   ],
   controllers: [OutboundController],
   providers: [OutboundService, FirebaseService],

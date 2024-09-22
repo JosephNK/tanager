@@ -3,13 +3,20 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { TanagerExceptionFilter } from '@app/exceptions';
 // import { Logger } from '@nestjs/common';
 import { InboundModule } from './inbound.module';
+import { MyLoggerService } from '@app/commons';
 
 // const logger = new Logger('Blog');
 
 async function bootstrap() {
   const port = process.env.PORT;
 
-  const app = await NestFactory.create(InboundModule);
+  const app = await NestFactory.create(InboundModule, {
+    bufferLogs: true,
+  });
+
+  // Logger
+  const logger = app.get(MyLoggerService);
+  app.useLogger(logger);
 
   // Filters Setup
   app.useGlobalFilters(new TanagerExceptionFilter());
