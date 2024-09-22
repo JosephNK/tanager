@@ -39,11 +39,12 @@ export class InboundService {
         throw toException(new TokenNotFoundException(), isRPC);
       }
 
-      return {
-        identifier: identifier,
-        token: token,
-        platform: platform,
-      };
+      const outputDto = new RegisterOutputPortDto();
+      outputDto.identifier = identifier;
+      outputDto.token = token;
+      outputDto.platform = platform;
+
+      return outputDto;
     } catch (error) {
       throw error;
     }
