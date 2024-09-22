@@ -59,6 +59,8 @@ apps/outbound
 
 Create file `.env.development`, `.env.production`
 
+For reference, place `FIREBASE_SERVICE_KEY_FILE` the key file in root.
+
 ```bash
 PORT=3200
 MICROSERVICE_OUTBOUND_PORT=3211
