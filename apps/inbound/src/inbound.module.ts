@@ -16,5 +16,14 @@ import { MyLoggerModule } from '@app/commons';
   ],
   controllers: [InboundController],
   providers: [InboundService],
+  exports: [InboundService],
 })
 export class InboundModule {}
+
+@Module({
+  imports: [],
+  controllers: [],
+  providers: [InboundService],
+  exports: [InboundService],
+})
+export class InboundModuleWithoutController {}

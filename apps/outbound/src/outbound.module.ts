@@ -31,3 +31,19 @@ import { MyLoggerModule } from '@app/commons';
   providers: [OutboundService, FirebaseService],
 })
 export class OutboundModule {}
+
+@Module({
+  imports: [
+    TypeOrmModule.forRootAsync({
+      useClass: TypeormConfig,
+      dataSourceFactory: async (options: DataSourceOptions) => {
+        return new DataSource(options).initialize();
+      },
+    }),
+    TypeOrmModule.forFeature([Token, MessageLog]),
+  ],
+  controllers: [],
+  providers: [OutboundService, FirebaseService],
+  exports: [OutboundService],
+})
+export class OutboundModuleWithoutController {}

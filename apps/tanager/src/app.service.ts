@@ -16,13 +16,14 @@ import {
   RpcException,
 } from '@nestjs/microservices';
 import { catchError, lastValueFrom, throwError } from 'rxjs';
+import { InboundService } from 'apps/inbound/src/inbound.service';
 
 @Injectable()
 export class AppService {
   private inboundClient: ClientProxy;
   private outboundClient: ClientProxy;
 
-  constructor() {
+  constructor(private readonly inboundService: InboundService) {
     this.inboundClient = ClientProxyFactory.create({
       transport: Transport.TCP,
       options: {
@@ -40,6 +41,7 @@ export class AppService {
   }
 
   async register(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+    await this.inboundService.register(dto, false);
     return await this.inOutStream<RegisterInputPortDto, RegisterOutputPortDto>(
       'register',
       dto,

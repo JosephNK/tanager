@@ -4,11 +4,14 @@ import { TanagerExceptionFilter } from '@app/exceptions';
 // import { Logger } from '@nestjs/common';
 import { InboundModule } from './inbound.module';
 import { MyLoggerService } from '@app/commons';
+import parseUrl from 'parse-url';
 
 // const logger = new Logger('Blog');
 
 async function bootstrap() {
-  const port = process.env.PORT;
+  const uri = process.env.INBOUND_URI;
+  const parseUri = parseUrl(uri);
+  const port = parseUri.port;
 
   const app = await NestFactory.create(InboundModule, {
     bufferLogs: true,

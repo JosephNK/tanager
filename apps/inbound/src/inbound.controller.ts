@@ -2,8 +2,6 @@ import { Controller, Body, Get, Post, Query } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InboundService } from './inbound.service';
 import {
-  RegisterInputPortDto,
-  RegisterOutputPortDto,
   UnregisterInputPortDto,
   FindTokenInputPortDto,
   TokenPort,
@@ -13,16 +11,20 @@ import {
   SendMessageOutputPortDto,
   FindTokenOutputPortDto,
 } from '@app/commons';
+import { InboundRegisterInputPortDto } from './dtos/input.port.dto';
+import { InboundRegisterOutputPortDto } from './dtos/output.port.dto';
 
 /// Adapter
 @Controller()
-export class InboundController implements TokenPort, SendPort {
+export class InboundController {
   constructor(private readonly service: InboundService) {}
 
   // RESTful
 
   @Post('register')
-  register(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+  register(
+    @Body() dto: InboundRegisterInputPortDto,
+  ): Promise<InboundRegisterOutputPortDto> {
     return this.service.register(dto, false);
   }
 
@@ -50,7 +52,9 @@ export class InboundController implements TokenPort, SendPort {
   // MessagePattern
 
   @MessagePattern({ cmd: 'register' })
-  registerStream(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+  registerStream(
+    dto: InboundRegisterInputPortDto,
+  ): Promise<InboundRegisterOutputPortDto> {
     return this.service.register(dto, true);
   }
 

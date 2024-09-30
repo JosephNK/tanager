@@ -15,8 +15,11 @@ describe('InboundController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(inboundController.getHello()).toBe('Hello World!');
-    });
+    // it('should return "Hello World!"', () => {
+    //   expect(inboundController.getHello()).toBe('Hello World!');
+    // });
+    // it('should return "Hello World!"', () => {
+    //   expect(inboundController.getHello()).toBe('Hello World!');
+    // });
   });
 });

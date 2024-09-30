@@ -3,6 +3,7 @@ import {
   FindTokenOutputPortDto,
   getPlatformEnum,
   MessageStatus,
+  Provider,
   SendMessageInputPortDto,
   SendMessageOutputPortDto,
   UnregisterOutputPortDto,
@@ -14,35 +15,43 @@ import {
   FindTokenInputPortDto,
 } from '@app/commons';
 import {
-  IdentifierNotFoundException,
   MessageNotFoundException,
+  ProviderNotFoundException,
+  ReceiverNotFoundException,
   TokenNotFoundException,
   toException,
 } from '@app/exceptions';
+import { InboundRegisterInputPortDto } from './dtos/input.port.dto';
+import { InboundRegisterOutputPortDto } from './dtos/output.port.dto';
 
 /// Service
 @Injectable()
 export class InboundService {
   async register(
-    dto: RegisterInputPortDto,
+    dto: InboundRegisterInputPortDto,
     isRPC: boolean,
-  ): Promise<RegisterOutputPortDto> {
+  ): Promise<InboundRegisterOutputPortDto> {
+    console.log('InboundService register', dto);
     try {
-      const identifier = dto.identifier;
-      const token = dto.token;
-      const platform = getPlatformEnum(dto.platform);
+      const receiver = dto.receiver;
+      const provider = dto.provider;
+      const optional = dto.optional;
 
-      if (!identifier) {
-        throw toException(new IdentifierNotFoundException(), isRPC);
+      if (receiver.length == 0) {
+        throw toException(new ReceiverNotFoundException(), isRPC);
       }
-      if (!token) {
-        throw toException(new TokenNotFoundException(), isRPC);
+      if (provider === Provider.NONE) {
+        throw toException(new ProviderNotFoundException(), isRPC);
       }
 
-      const outputDto = new RegisterOutputPortDto();
-      outputDto.identifier = identifier;
-      outputDto.token = token;
-      outputDto.platform = platform;
+      if (provider === Provider.FIREBASE) {
+        if (!optional || !optional.token) {
+          throw toException(new TokenNotFoundException(), isRPC);
+        }
+      }
+
+      const outputDto = new InboundRegisterOutputPortDto();
+      outputDto.inputPortDto = dto;
 
       return outputDto;
     } catch (error) {
@@ -59,7 +68,7 @@ export class InboundService {
       const token = dto.token;
 
       if (!identifier) {
-        throw toException(new IdentifierNotFoundException(), isRPC);
+        throw toException(new ReceiverNotFoundException(), isRPC);
       }
 
       const outputDto = new UnregisterOutputPortDto();
@@ -80,7 +89,7 @@ export class InboundService {
       const identifier = dto.identifier;
 
       if (!identifier) {
-        throw toException(new IdentifierNotFoundException(), isRPC);
+        throw toException(new ReceiverNotFoundException(), isRPC);
       }
 
       const outputDto = new FindTokenOutputPortDto();
@@ -103,7 +112,7 @@ export class InboundService {
       const message = dto.message;
 
       if (!identifier) {
-        throw toException(new IdentifierNotFoundException(), isRPC);
+        throw toException(new ReceiverNotFoundException(), isRPC);
       }
       if (!message) {
         throw toException(new MessageNotFoundException(), isRPC);

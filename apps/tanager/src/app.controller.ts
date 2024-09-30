@@ -55,6 +55,7 @@ export class AppController implements TokenPort, SendPort {
   @Post('register')
   @UseGuards(ContentTypeApplicationJsonGuard)
   register(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+    console.log('app register');
     return this.appService.register(dto);
   }
 

@@ -3,9 +3,12 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { TanagerExceptionFilter } from '@app/exceptions';
 import { OutboundModule } from './outbound.module';
 import { MyLoggerService } from '@app/commons';
+import parseUrl from 'parse-url';
 
 async function bootstrap() {
-  const port = process.env.PORT;
+  const uri = process.env.OUTBOUND_URI;
+  const parseUri = parseUrl(uri);
+  const port = parseUri.port;
 
   const app = await NestFactory.create(OutboundModule, {
     bufferLogs: true,
