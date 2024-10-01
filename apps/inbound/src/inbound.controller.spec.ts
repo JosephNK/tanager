@@ -10,6 +10,9 @@ import {
   RegisterOutPortDto,
   SendMessageInPortDto,
   SendMessageOutPortDto,
+  TokenInPortDto,
+  TokenOutPortDto,
+  TokenStatus,
   UnregisterInPortDto,
   UnregisterOutPortDto,
 } from '@app/models';
@@ -96,6 +99,23 @@ describe('InboundController', () => {
       outPortDto.messageStatus = MessageStatus.PENDING;
 
       const result = inboundController.sendMessage(inPortDto);
+
+      await expect(result).resolves.toStrictEqual(outPortDto);
+    });
+
+    it('findTokenAll is should return "Same Result"', async () => {
+      const receiver = ['jackDaniel'];
+
+      const inPortDto = new TokenInPortDto();
+      inPortDto.receiver = receiver;
+
+      const outPortDto = new TokenOutPortDto();
+      outPortDto.receiver = receiver;
+      outPortDto.optional = null;
+      outPortDto.platform = Platform.NONE;
+      outPortDto.tokenStatus = TokenStatus.PENDING;
+
+      const result = inboundController.findTokenAll(inPortDto);
 
       await expect(result).resolves.toStrictEqual(outPortDto);
     });

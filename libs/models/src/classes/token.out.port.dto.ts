@@ -24,5 +24,5 @@ export class TokenOutPortDto {
     enum: [...Object.keys(TokenStatus)],
     enumName: 'TokenStatus',
   })
-  status?: TokenStatus;
+  tokenStatus?: TokenStatus;
 }

@@ -8,6 +8,7 @@ import {
 } from '@app/exceptions';
 import {
   MessageStatus,
+  Platform,
   Provider,
   RegisterInPortDto,
   RegisterOutPortDto,
@@ -142,8 +143,8 @@ export class InboundService {
       const outDto = new TokenOutPortDto();
       outDto.receiver = receiver;
       outDto.optional = null;
-      outDto.platform = null;
-      outDto.status = TokenStatus.PENDING;
+      outDto.platform = Platform.NONE;
+      outDto.tokenStatus = TokenStatus.PENDING;
 
       return outDto;
     } catch (error) {
