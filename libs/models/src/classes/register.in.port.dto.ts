@@ -1,14 +1,8 @@
-import { Platform, Provider } from '@app/commons';
 import { ApiProperty } from '@nestjs/swagger';
+import { OptionalDto } from './optional.dto';
+import { Platform, Provider } from '../enum/enum';
 
-/// Input Port
-
-export class InboundOptionalDto {
-  @ApiProperty()
-  token?: string;
-}
-
-export class InboundRegisterInputPortDto {
+export class RegisterInPortDto {
   @ApiProperty({
     example: '[jack@gmail.com, daniel@gmail.com, jackDaniel]',
     description:
@@ -25,7 +19,7 @@ export class InboundRegisterInputPortDto {
 
   @ApiProperty({
     example: 'FIREBASE',
-    description: '',
+    description: 'This is a provider-specified property.',
     enum: [...Object.keys(Provider)],
     enumName: 'Provider',
     required: true,
@@ -33,11 +27,11 @@ export class InboundRegisterInputPortDto {
   provider: Provider;
 
   @ApiProperty()
-  optional?: InboundOptionalDto;
+  optional?: OptionalDto;
 
   @ApiProperty({
     example: 'IOS',
-    description: '',
+    description: 'This is a Platform property.',
     enum: [...Object.keys(Platform)],
     enumName: 'Platform',
   })

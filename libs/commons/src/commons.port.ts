@@ -3,7 +3,7 @@ import {
   MessageStatus,
   Platform,
   TokenStatus,
-} from '@app/commons';
+} from './commons.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 /// Input Port

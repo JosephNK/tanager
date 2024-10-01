@@ -2,17 +2,15 @@ import { Controller, Body, Get, Post, Query } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InboundService } from './inbound.service';
 import {
-  UnregisterInputPortDto,
-  FindTokenInputPortDto,
-  TokenPort,
-  UnregisterOutputPortDto,
-  SendMessageInputPortDto,
-  SendPort,
-  SendMessageOutputPortDto,
-  FindTokenOutputPortDto,
-} from '@app/commons';
-import { InboundRegisterInputPortDto } from './dtos/input.port.dto';
-import { InboundRegisterOutputPortDto } from './dtos/output.port.dto';
+  RegisterInPortDto,
+  RegisterOutPortDto,
+  SendMessageInPortDto,
+  SendMessageOutPortDto,
+  TokenInPortDto,
+  TokenOutPortDto,
+  UnregisterInPortDto,
+  UnregisterOutPortDto,
+} from '@app/models';
 
 /// Adapter
 @Controller()
@@ -21,61 +19,52 @@ export class InboundController {
 
   // RESTful
 
+  @Get()
+  getHello(): string {
+    return 'Hello World!';
+  }
+
   @Post('register')
-  register(
-    @Body() dto: InboundRegisterInputPortDto,
-  ): Promise<InboundRegisterOutputPortDto> {
+  register(@Body() dto: RegisterInPortDto): Promise<RegisterOutPortDto> {
     return this.service.register(dto, false);
   }
 
   @Post('unregister')
-  unregister(
-    @Body() dto: UnregisterInputPortDto,
-  ): Promise<UnregisterOutputPortDto[]> {
+  unregister(@Body() dto: UnregisterInPortDto): Promise<UnregisterOutPortDto> {
     return this.service.unregister(dto, false);
-  }
-
-  @Get('findTokenAll')
-  findTokenAll(
-    @Query() dto: FindTokenInputPortDto,
-  ): Promise<FindTokenOutputPortDto[]> {
-    return this.service.findTokenAll(dto, false);
   }
 
   @Post('sendMessage')
   async sendMessage(
-    @Body() dto: SendMessageInputPortDto,
-  ): Promise<SendMessageOutputPortDto[]> {
+    @Body() dto: SendMessageInPortDto,
+  ): Promise<SendMessageOutPortDto> {
     return this.service.sendMessage(dto, false);
+  }
+
+  @Get('findTokenAll')
+  findTokenAll(@Query() dto: TokenInPortDto): Promise<TokenOutPortDto> {
+    return this.service.findTokenAll(dto, false);
   }
 
   // MessagePattern
 
   @MessagePattern({ cmd: 'register' })
-  registerStream(
-    dto: InboundRegisterInputPortDto,
-  ): Promise<InboundRegisterOutputPortDto> {
+  registerStream(dto: RegisterInPortDto): Promise<RegisterOutPortDto> {
     return this.service.register(dto, true);
   }
 
   @MessagePattern({ cmd: 'unregister' })
-  unregisterStream(
-    dto: UnregisterInputPortDto,
-  ): Promise<UnregisterOutputPortDto[]> {
+  unregisterStream(dto: UnregisterInPortDto): Promise<UnregisterOutPortDto> {
     return this.service.unregister(dto, true);
   }
 
-  @MessagePattern({ cmd: 'findTokenAll' })
-  findTokenAllStream(
-    dto: FindTokenInputPortDto,
-  ): Promise<FindTokenOutputPortDto[]> {
-    return this.service.findTokenAll(dto, true);
+  @MessagePattern({ cmd: 'sendMessage' })
+  sendMessageStream(dto: SendMessageInPortDto): Promise<SendMessageOutPortDto> {
+    return this.service.sendMessage(dto, true);
   }
 
-  @MessagePattern({ cmd: 'sendMessage' })
-  sendMessageStream(
-    dto: SendMessageInputPortDto,
-  ): Promise<SendMessageOutputPortDto[]> {
-    return this.service.sendMessage(dto, true);
+  @MessagePattern({ cmd: 'findTokenAll' })
+  findTokenAllStream(dto: TokenInPortDto): Promise<TokenOutPortDto> {
+    return this.service.findTokenAll(dto, true);
   }
 }
