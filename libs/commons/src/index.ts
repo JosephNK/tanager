@@ -1,3 +1,4 @@
+export * from './commons.enum';
 export * from './commons.guard';
 export * from './commons.logger.module';
 export * from './commons.logger.service';

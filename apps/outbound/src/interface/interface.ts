@@ -1,11 +1,19 @@
 import { SendMessageInputPortDto } from '@app/commons';
-import { Token } from '../entity/token.entity';
-import { MessageLog } from '../entity/message.log.entity';
+import { FirebaseToken } from '../database/entity/firebase.token.entity';
+import { FirebaseMessageLog } from '../database/entity/firebase.message.log.entity';
 
 export interface ISendMessageProsess {
   processSendMessage(
     dto: SendMessageInputPortDto,
     messageData: string,
-    tokens: Token[],
-  ): Promise<MessageLog[]>;
+    tokens: FirebaseToken[],
+  ): Promise<FirebaseMessageLog[]>;
+}
+
+export interface IRegisterProsess {
+  processSendMessage(
+    dto: SendMessageInputPortDto,
+    messageData: string,
+    tokens: FirebaseToken[],
+  ): Promise<FirebaseMessageLog[]>;
 }

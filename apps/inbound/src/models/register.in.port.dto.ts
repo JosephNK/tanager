@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OptionalDto } from './optional.dto';
-import { Platform, Provider } from '../enum/enum';
+import { Platform, Provider } from '@app/commons';
 
 export class RegisterInPortDto {
   @ApiProperty({

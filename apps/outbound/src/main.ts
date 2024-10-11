@@ -19,7 +19,7 @@ async function bootstrap() {
   app.useLogger(logger);
 
   // Filters Setup
-  app.useGlobalFilters(new TanagerExceptionFilter());
+  app.useGlobalFilters(new TanagerExceptionFilter(logger));
 
   // MicroService Setup
   app.connectMicroservice<MicroserviceOptions>({

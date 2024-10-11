@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Provider } from '../enum/enum';
 import { OptionalDto } from './optional.dto';
+import { Provider } from '@app/commons';
 
 export class SendMessageInPortDto {
   @ApiProperty({

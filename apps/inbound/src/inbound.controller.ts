@@ -1,16 +1,14 @@
 import { Controller, Body, Get, Post, Query } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InboundService } from './inbound.service';
-import {
-  RegisterInPortDto,
-  RegisterOutPortDto,
-  SendMessageInPortDto,
-  SendMessageOutPortDto,
-  TokenInPortDto,
-  TokenOutPortDto,
-  UnregisterInPortDto,
-  UnregisterOutPortDto,
-} from '@app/models';
+import { RegisterInPortDto } from './models/register.in.port.dto';
+import { RegisterOutPortDto } from './models/register.out.port.dto';
+import { UnregisterInPortDto } from './models/unregister.in.port.dto';
+import { UnregisterOutPortDto } from './models/unregister.out.port.dto';
+import { SendMessageOutPortDto } from './models/message.out.port.dto';
+import { TokenInPortDto } from './models/token.in.port.dto';
+import { SendMessageInPortDto } from './models/message.in.port.dto';
+import { TokenOutPortDto } from './models/token.out.port.dto';
 
 /// Adapter
 @Controller()

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { OptionalDto } from './optional.dto';
-import { Provider } from '../enum/enum';
+import { Provider } from '@app/commons';
 
-export class UnregisterOutPortDto {
+export class UnregisterInPortDto {
   @ApiProperty({
     example: '[jack@gmail.com, daniel@gmail.com, jackDaniel]',
     description:

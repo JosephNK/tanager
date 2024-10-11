@@ -20,7 +20,7 @@ async function bootstrap() {
 
   // Filters
   app.useGlobalFilters(
-    new TanagerExceptionFilter(),
+    new TanagerExceptionFilter(logger),
     new RpcExceptionFilter(logger),
   );
 

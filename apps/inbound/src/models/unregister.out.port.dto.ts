@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Platform, TokenStatus } from '../enum/enum';
 import { OptionalDto } from './optional.dto';
+import { Provider } from '@app/commons';
 
-export class TokenOutPortDto {
+export class UnregisterOutPortDto {
   @ApiProperty({
     example: '[jack@gmail.com, daniel@gmail.com, jackDaniel]',
     description:
@@ -11,18 +11,15 @@ export class TokenOutPortDto {
   })
   receiver: string[];
 
+  @ApiProperty({
+    example: 'FIREBASE',
+    description: 'This is a provider-specified property.',
+    enum: [...Object.keys(Provider)],
+    enumName: 'Provider',
+    required: true,
+  })
+  provider: Provider;
+
   @ApiProperty()
   optional?: OptionalDto;
-
-  @ApiProperty({
-    enum: [...Object.keys(Platform)],
-    enumName: 'Platform',
-  })
-  platform?: Platform;
-
-  @ApiProperty({
-    enum: [...Object.keys(TokenStatus)],
-    enumName: 'TokenStatus',
-  })
-  tokenStatus?: TokenStatus;
 }

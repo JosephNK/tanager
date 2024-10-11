@@ -5,24 +5,22 @@ import {
   FirebaseSendMessageOutputPortDto,
   MessageStatus,
   Provider,
-  SendMessageInputPortDto,
   TokenStatus,
 } from '@app/commons';
 import { readFile } from 'fs/promises';
 import * as admin from 'firebase-admin';
 import { InvalidJSONException } from '@app/exceptions';
-import { ISendMessageProsess } from '../interface/interface';
-import { Token } from '../entity/token.entity';
+import { FirebaseToken } from '../database/entity/firebase.token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { MessageLog } from '../entity/message.log.entity';
+import { FirebaseMessageLog } from '../database/entity/firebase.message.log.entity';
+import { FirebaseMessageDto } from '../models/firebase.message.dto';
 
-/// Service
 @Injectable()
-export class FirebaseService implements ISendMessageProsess {
+export class FirebaseMessageService {
   constructor(
-    @InjectRepository(Token)
-    private readonly tokenRepository: Repository<Token>,
+    @InjectRepository(FirebaseToken)
+    private readonly tokenRepository: Repository<FirebaseToken>,
   ) {
     const filePath = `${process.env.FIREBASE_SERVICE_KEY_FILE}`;
     readFile(filePath, 'utf8').then((data) => {
@@ -48,11 +46,11 @@ export class FirebaseService implements ISendMessageProsess {
   }
 
   async processSendMessage(
-    dto: SendMessageInputPortDto,
+    dto: FirebaseMessageDto,
     messageData: string,
-    tokens: Token[],
-  ): Promise<MessageLog[]> {
-    const identifier = dto.identifier;
+    tokens: FirebaseToken[],
+  ): Promise<FirebaseMessageLog[]> {
+    const receiver = dto.receiver;
     const title = dto.title;
     const message = dto.message;
     const data = dto.data;
@@ -79,7 +77,7 @@ export class FirebaseService implements ISendMessageProsess {
 
         // 토큰 상태 REVOKED 처리
         if (status == FirebaseMessageStatus.INVALID_TOKEN) {
-          const tokens: Token[] = await this.tokenRepository.findBy({
+          const tokens: FirebaseToken[] = await this.tokenRepository.findBy({
             token: token,
           });
           for (const token of tokens) {
@@ -92,8 +90,8 @@ export class FirebaseService implements ISendMessageProsess {
         }
 
         // Message Log
-        const messageLog = new MessageLog();
-        messageLog.identifier = identifier;
+        const messageLog = new FirebaseMessageLog();
+        messageLog.receiver = receiver;
         messageLog.token = token;
         messageLog.provider = Provider.FIREBASE;
         messageLog.data = messageData;

@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { OptionalDto } from './optional.dto';
-import { Platform, Provider } from '../enum/enum';
 
-export class RegisterOutPortDto {
+import { OptionalDto } from './optional.dto';
+import { MessageStatus, Provider } from '@app/commons';
+
+export class SendMessageOutPortDto {
   @ApiProperty({
     example: '[jack@gmail.com, daniel@gmail.com, jackDaniel]',
     description:
@@ -30,10 +31,8 @@ export class RegisterOutPortDto {
   optional?: OptionalDto;
 
   @ApiProperty({
-    example: 'IOS',
-    description: 'This is a Platform property.',
-    enum: [...Object.keys(Platform)],
-    enumName: 'Platform',
+    enum: [...Object.keys(MessageStatus)],
+    enumName: 'MessageStatus',
   })
-  platform?: Platform;
+  messageStatus?: MessageStatus;
 }

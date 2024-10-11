@@ -119,5 +119,29 @@ describe('InboundController', () => {
 
       await expect(result).resolves.toStrictEqual(outPortDto);
     });
+
+    it('sendMessage is should return "Same Result"', async () => {
+      const receiver = ['jackDaniel'];
+      const provider = Provider.FIREBASE;
+
+      const optional = new OptionalDto();
+      optional.message = 'Hello World';
+
+      const inPortDto = new SendMessageInPortDto();
+      inPortDto.receiver = receiver;
+      inPortDto.sender = null;
+      inPortDto.provider = provider;
+      inPortDto.optional = optional;
+
+      const outPortDto = new SendMessageOutPortDto();
+      outPortDto.receiver = receiver;
+      outPortDto.provider = provider;
+      outPortDto.optional = optional;
+      outPortDto.messageStatus = MessageStatus.PENDING;
+
+      const result = inboundController.sendMessage(inPortDto);
+
+      await expect(result).resolves.toStrictEqual(outPortDto);
+    });
   });
 });

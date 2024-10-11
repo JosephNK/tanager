@@ -6,10 +6,11 @@ import { OutboundService } from './outbound.service';
 import { validate } from './env/env.validation';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { TypeormConfig } from './database/typeorm.config';
-import { Token } from './entity/token.entity';
-import { FirebaseService } from './firebase/firebase.service';
-import { MessageLog } from './entity/message.log.entity';
+import { FirebaseToken } from './database/entity/firebase.token.entity';
+import { FirebaseMessageLog } from './database/entity/firebase.message.log.entity';
 import { MyLoggerModule } from '@app/commons';
+import { FirebaseDBService } from './firebase/firebase.db.service';
+import { FirebaseMessageService } from './firebase/firebase.message.service';
 
 @Module({
   imports: [
@@ -24,11 +25,11 @@ import { MyLoggerModule } from '@app/commons';
         return new DataSource(options).initialize();
       },
     }),
-    TypeOrmModule.forFeature([Token, MessageLog]),
+    TypeOrmModule.forFeature([FirebaseToken, FirebaseMessageLog]),
     MyLoggerModule,
   ],
   controllers: [OutboundController],
-  providers: [OutboundService, FirebaseService],
+  providers: [OutboundService, FirebaseMessageService, FirebaseDBService],
 })
 export class OutboundModule {}
 
@@ -40,10 +41,10 @@ export class OutboundModule {}
         return new DataSource(options).initialize();
       },
     }),
-    TypeOrmModule.forFeature([Token, MessageLog]),
+    TypeOrmModule.forFeature([FirebaseToken, FirebaseMessageLog]),
   ],
   controllers: [],
-  providers: [OutboundService, FirebaseService],
+  providers: [OutboundService, FirebaseMessageService, FirebaseDBService],
   exports: [OutboundService],
 })
 export class OutboundModuleWithoutController {}
