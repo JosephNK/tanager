@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { MessageStatus, Platform, Provider, TokenStatus } from '@app/commons';
 import {
   MessageNotFoundException,
   ProviderNotFoundException,
@@ -6,15 +6,15 @@ import {
   TokenNotFoundException,
   toException,
 } from '@app/exceptions';
+import { Injectable } from '@nestjs/common';
+import { SendMessageInPortDto } from './models/message.in.port.dto';
+import { SendMessageOutPortDto } from './models/message.out.port.dto';
 import { RegisterInPortDto } from './models/register.in.port.dto';
 import { RegisterOutPortDto } from './models/register.out.port.dto';
-import { MessageStatus, Platform, Provider, TokenStatus } from '@app/commons';
+import { TokenInPortDto } from './models/token.in.port.dto';
+import { TokenOutPortDto } from './models/token.out.port.dto';
 import { UnregisterInPortDto } from './models/unregister.in.port.dto';
 import { UnregisterOutPortDto } from './models/unregister.out.port.dto';
-import { SendMessageOutPortDto } from './models/message.out.port.dto';
-import { SendMessageInPortDto } from './models/message.in.port.dto';
-import { TokenOutPortDto } from './models/token.out.port.dto';
-import { TokenInPortDto } from './models/token.in.port.dto';
 
 /// Service
 @Injectable()
