@@ -1,4 +1,11 @@
-import { MessageStatus, Platform, Provider, TokenStatus } from '@app/commons';
+import {
+  MessageStatus,
+  Platform,
+  Provider,
+  RegisterInputPortDto,
+  RegisterOutputPortDto,
+  TokenStatus,
+} from '@app/commons';
 import {
   MessageNotFoundException,
   ProviderNotFoundException,
@@ -9,7 +16,6 @@ import {
 import { Injectable } from '@nestjs/common';
 import { SendMessageInPortDto } from './models/message.in.port.dto';
 import { SendMessageOutPortDto } from './models/message.out.port.dto';
-import { RegisterInPortDto } from './models/register.in.port.dto';
 import { RegisterOutPortDto } from './models/register.out.port.dto';
 import { TokenInPortDto } from './models/token.in.port.dto';
 import { TokenOutPortDto } from './models/token.out.port.dto';
@@ -20,35 +26,21 @@ import { UnregisterOutPortDto } from './models/unregister.out.port.dto';
 @Injectable()
 export class InboundService {
   async register(
-    dto: RegisterInPortDto,
+    dto: RegisterInputPortDto,
     isRPC: boolean,
-  ): Promise<RegisterOutPortDto> {
-    console.log('InboundService register', dto);
+  ): Promise<RegisterOutputPortDto> {
     try {
-      const receiver = dto.receiver;
-      const sender = dto.sender;
-      const provider = dto.provider;
-      const optional = dto.optional;
+      const identifier = dto.identifier;
+      const token = dto.token;
       const platform = dto.platform;
 
-      if (receiver.length == 0) {
+      if (identifier.length == 0) {
         throw toException(new ReceiverNotFoundException(), isRPC);
       }
-      if (!provider || provider === Provider.NONE) {
-        throw toException(new ProviderNotFoundException(), isRPC);
-      }
 
-      if (provider === Provider.FIREBASE) {
-        if (!optional || !optional.token) {
-          throw toException(new TokenNotFoundException(), isRPC);
-        }
-      }
-
-      const outDto = new RegisterOutPortDto();
-      outDto.receiver = receiver;
-      outDto.sender = sender;
-      outDto.provider = provider;
-      outDto.optional = optional;
+      const outDto = new RegisterOutputPortDto();
+      outDto.identifier = identifier;
+      outDto.token = token;
       outDto.platform = platform;
 
       return outDto;
@@ -69,6 +61,7 @@ export class InboundService {
       if (receiver.length == 0) {
         throw toException(new ReceiverNotFoundException(), isRPC);
       }
+
       if (provider === Provider.NONE) {
         throw toException(new ProviderNotFoundException(), isRPC);
       }
@@ -102,6 +95,7 @@ export class InboundService {
       if (receiver.length == 0) {
         throw toException(new ReceiverNotFoundException(), isRPC);
       }
+
       if (provider === Provider.NONE) {
         throw toException(new ProviderNotFoundException(), isRPC);
       }

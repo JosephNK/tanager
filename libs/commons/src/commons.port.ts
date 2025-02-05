@@ -85,7 +85,7 @@ export class RegisterOutputPortDto {
     enum: [...Object.keys(TokenStatus)],
     enumName: 'TokenStatus',
   })
-  status?: TokenStatus;
+  tokenStatus?: TokenStatus;
 }
 
 export class UnregisterOutputPortDto {

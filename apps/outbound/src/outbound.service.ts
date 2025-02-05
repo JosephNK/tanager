@@ -19,6 +19,11 @@ import { SendMessageInPortDto } from './models/send.message.in.port.dto';
 import { SendMessageOutPortDto } from './models/send.message.out.port.dto';
 import { FirebaseMessageStatusDto } from './models/firebase.message.status.dto';
 import { FirebaseMessageLog } from './database/entity/firebase.message.log.entity';
+import {
+  RegisterInputPortDto,
+  RegisterOutputPortDto,
+} from '@app/commons/commons.port';
+import { FirebaseRegisterDto } from './models/firebase.register.dto';
 
 @Injectable()
 export class OutboundService {
@@ -32,22 +37,27 @@ export class OutboundService {
   ) {}
 
   async register(
-    dto: RegisterInPortDto,
+    dto: RegisterInputPortDto,
     isRPC: boolean,
-  ): Promise<RegisterOutPortDto> {
+  ): Promise<RegisterOutputPortDto> {
     try {
-      var firebaseStatusDto: FirebaseRegisterStatusDto;
+      const identifier = dto.identifier;
+      const token = dto.token;
+      const platform = dto.platform;
 
-      const firebase = dto.firebase;
-      if (firebase !== null) {
-        firebaseStatusDto = await this.firebaseDBService.register(
-          firebase,
-          isRPC,
-        );
-      }
+      const firebseRegisterDto = new FirebaseRegisterDto();
+      firebseRegisterDto.receiver = identifier;
+      firebseRegisterDto.token = token;
+      firebseRegisterDto.platform = platform;
 
-      const outputDto = new RegisterOutPortDto();
-      outputDto.firebase = firebaseStatusDto;
+      const firebaseStatusDto: FirebaseRegisterStatusDto =
+        await this.firebaseDBService.register(firebseRegisterDto, isRPC);
+
+      const outputDto = new RegisterOutputPortDto();
+      outputDto.identifier = firebaseStatusDto.receiver;
+      outputDto.token = firebaseStatusDto.token;
+      outputDto.platform = firebaseStatusDto.platform;
+      outputDto.tokenStatus = firebaseStatusDto.tokenStatus;
 
       return outputDto;
     } catch (error) {
@@ -64,9 +74,10 @@ export class OutboundService {
     isRPC: boolean,
   ): Promise<UnregisterOutPortDto> {
     try {
+      const firebase = dto.firebase;
+
       var firebaseStatusDto: FirebaseUnregisterStatusDto[];
 
-      const firebase = dto.firebase;
       if (firebase !== null) {
         firebaseStatusDto = await this.firebaseDBService.unregister(
           firebase,
@@ -92,9 +103,10 @@ export class OutboundService {
     isRPC: boolean,
   ): Promise<SendMessageOutPortDto> {
     try {
+      const firebase = dto.firebase;
+
       var firebaseStatusDto: FirebaseMessageStatusDto;
 
-      const firebase = dto.firebase;
       if (firebase !== null) {
         firebaseStatusDto = await this.firebaseDBService.sendMessage(
           firebase,

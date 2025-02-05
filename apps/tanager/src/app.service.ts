@@ -17,13 +17,19 @@ import {
 } from '@nestjs/microservices';
 import { catchError, lastValueFrom, throwError } from 'rxjs';
 import { InboundService } from 'apps/inbound/src/inbound.service';
+import { OutboundService } from 'apps/outbound/src/outbound.service';
+import { PushNotificationService } from 'packages/push-notification';
 
 @Injectable()
 export class AppService {
   private inboundClient: ClientProxy;
   private outboundClient: ClientProxy;
 
-  constructor(private readonly inboundService: InboundService) {
+  constructor(
+    private readonly inboundService: InboundService,
+    private readonly outboundService: OutboundService,
+    private readonly pushNotificationService: PushNotificationService,
+  ) {
     this.inboundClient = ClientProxyFactory.create({
       transport: Transport.TCP,
       options: {
@@ -40,8 +46,22 @@ export class AppService {
     });
   }
 
+  async test(): Promise<String> {
+    try {
+      return this.pushNotificationService.doSomething();
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async register(dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
-    await this.inboundService.register(dto, false);
+    try {
+      await this.inboundService.register(dto, false);
+      return await this.outboundService.register(dto, false);
+    } catch (error) {
+      throw error;
+    }
+
     return await this.inOutStream<RegisterInputPortDto, RegisterOutputPortDto>(
       'register',
       dto,
