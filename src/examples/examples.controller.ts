@@ -1,5 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
 import { ExamplesService } from './examples.service';
+import { PushNotificationSendMessageDTO } from '@packages/push-notification';
+import {
+  ExampleSendMessageRequestDTO,
+  ExampleSendMessageResponseDTO,
+} from './examples.dto';
 
 @Controller('api')
 export class ExamplesController {
@@ -7,7 +12,12 @@ export class ExamplesController {
 
   @Get('test')
   test(): Promise<String> {
-    console.log('test');
-    return this.appService.test();
+    return this.appService.doSomething();
+  }
+
+  sendMessage(
+    requestDto: ExampleSendMessageRequestDTO,
+  ): Promise<ExampleSendMessageResponseDTO> {
+    return this.appService.sendPushMessage(requestDto);
   }
 }

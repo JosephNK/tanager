@@ -1,20 +1,23 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import { PushNotificationService } from './push.notification.service';
-import { PushNotificationOptions } from './push.notification.options';
-import { PUSH_NOTIFICATION_CONFIG_OPTIONS } from './push.notification.constants';
+import {
+  PushNotificationOptions,
+  PushNotificationOptionsProvider,
+} from './push.notification.options';
 
-@Module({
-  providers: [PushNotificationService],
-  exports: [PushNotificationService],
-})
+@Module({})
 export class PushNotificationModule {
-  static forRoot(options?: PushNotificationOptions): DynamicModule {
+  static forRoot(options: PushNotificationOptions): DynamicModule {
+    if (!options) {
+      throw new Error('PushNotificationOptions is required');
+    }
+
     return {
       module: PushNotificationModule,
       providers: [
         {
-          provide: PUSH_NOTIFICATION_CONFIG_OPTIONS,
-          useValue: options,
+          provide: PushNotificationOptionsProvider,
+          useValue: new PushNotificationOptionsProvider(options),
         },
         PushNotificationService,
       ],
