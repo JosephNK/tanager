@@ -41,6 +41,12 @@ export class AppController implements TokenPort, SendPort {
 
   // RESTful
 
+  @Get('test')
+  test(): Promise<String> {
+    console.log('app register');
+    return this.appService.test();
+  }
+
   @ApiOperation({ summary: 'Token 등록 API', description: 'Token을 등록' })
   @ApiBody({ type: RegisterInputPortDto })
   @ApiOkResponse({
@@ -55,6 +61,7 @@ export class AppController implements TokenPort, SendPort {
   @Post('register')
   @UseGuards(ContentTypeApplicationJsonGuard)
   register(@Body() dto: RegisterInputPortDto): Promise<RegisterOutputPortDto> {
+    console.log('app register');
     return this.appService.register(dto);
   }
 

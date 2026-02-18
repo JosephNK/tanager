@@ -46,18 +46,24 @@ export enum FirebaseMessageStatus {
   UNKNOWN = 'UNKNOWN',
 }
 
-export function getTokenStatusEnum(value: string): TokenStatus | null {
-  value = value.toUpperCase();
-  if (Object.values(TokenStatus).includes(value as TokenStatus)) {
-    return value as TokenStatus;
+export function getTokenStatusEnum(
+  value: string | undefined,
+): TokenStatus | null {
+  if (value) {
+    value = value.toUpperCase();
+    if (Object.values(TokenStatus).includes(value as TokenStatus)) {
+      return value as TokenStatus;
+    }
   }
   return null;
 }
 
-export function getPlatformEnum(value: string): Platform {
-  value = value.toUpperCase();
-  if (Object.values(Platform).includes(value as Platform)) {
-    return value as Platform;
+export function getPlatformEnum(value: string | undefined): Platform {
+  if (value) {
+    value = value.toUpperCase();
+    if (Object.values(Platform).includes(value as Platform)) {
+      return value as Platform;
+    }
   }
   return Platform.NONE;
 }

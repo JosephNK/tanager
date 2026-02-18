@@ -1,39 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { FirebaseToken } from './database/entity/firebase.token.entity';
 import {
-  RegisterInputPortDto,
-  UnregisterInputPortDto,
-  FindTokenInputPortDto,
-  RegisterOutputPortDto,
-  getPlatformEnum,
-  getTokenStatusEnum,
-  UnregisterOutputPortDto,
-  TokenStatus,
-  SendMessageInputPortDto,
-  SendMessageOutputPortDto,
-  getMessageDataFrom,
-  FindTokenOutputPortDto,
-} from '@app/commons';
-import { Token } from './entity/token.entity';
-import {
-  DatabaseTokenNotFoundException,
   DatabaseTokenRegisterException,
   DatabaseTokenUnregisterException,
-  InvalidJSONException,
   toException,
 } from '@app/exceptions';
-import { FirebaseService } from './firebase/firebase.service';
-import { MessageLog } from './entity/message.log.entity';
+import { FirebaseMessageService } from './firebase/firebase.message.service';
+import { FirebaseDBService } from './firebase/firebase.db.service';
+import { RegisterInPortDto } from './models/register.in.port.dto';
+import { RegisterOutPortDto } from './models/register.out.port.dto';
+import { FirebaseRegisterStatusDto } from './models/firebase.register.status.dto';
+import { UnregisterInPortDto } from './models/unregister.in.port.dto';
+import { UnregisterOutPortDto } from './models/unregister.out.port.dto';
+import { FirebaseUnregisterStatusDto } from './models/firebase.unregister.status.dto';
+import { SendMessageInPortDto } from './models/send.message.in.port.dto';
+import { SendMessageOutPortDto } from './models/send.message.out.port.dto';
+import { FirebaseMessageStatusDto } from './models/firebase.message.status.dto';
+import { FirebaseMessageLog } from './database/entity/firebase.message.log.entity';
+import {
+  RegisterInputPortDto,
+  RegisterOutputPortDto,
+} from '@app/commons/commons.port';
+import { FirebaseRegisterDto } from './models/firebase.register.dto';
 
 @Injectable()
 export class OutboundService {
   constructor(
-    @InjectRepository(Token)
-    private readonly tokenRepository: Repository<Token>,
-    @InjectRepository(MessageLog)
-    private readonly messageLogRepository: Repository<MessageLog>,
-    private readonly firebaseService: FirebaseService,
+    @InjectRepository(FirebaseToken)
+    private readonly tokenRepository: Repository<FirebaseToken>,
+    @InjectRepository(FirebaseMessageLog)
+    private readonly messageLogRepository: Repository<FirebaseMessageLog>,
+    private readonly firebaseMessageService: FirebaseMessageService,
+    private readonly firebaseDBService: FirebaseDBService,
   ) {}
 
   async register(
@@ -41,54 +41,23 @@ export class OutboundService {
     isRPC: boolean,
   ): Promise<RegisterOutputPortDto> {
     try {
-      // 타사용자 기존 Token Status 변경 (=> USED)
-      await this.setOtherTokenStatusUsed(dto);
+      const identifier = dto.identifier;
+      const token = dto.token;
+      const platform = dto.platform;
 
-      // Insert Or Update
-      const token: Token = new Token();
-      token.identifier = dto.identifier;
-      token.token = dto.token;
-      token.platform = getPlatformEnum(dto.platform);
-      token.status = TokenStatus.VAILD;
+      const firebseRegisterDto = new FirebaseRegisterDto();
+      firebseRegisterDto.receiver = identifier;
+      firebseRegisterDto.token = token;
+      firebseRegisterDto.platform = platform;
 
-      const findToken = await this.tokenRepository.findOne({
-        where: [
-          {
-            identifier: dto.identifier,
-            token: dto.token,
-          },
-        ],
-      });
-
-      if (findToken == null) {
-        // Insert
-        await this.tokenRepository.insert(token);
-      } else {
-        // Update
-        token.updateAt = new Date();
-        await this.tokenRepository.update(findToken.id, token);
-      }
-
-      const result = await this.tokenRepository.findOneOrFail({
-        where: {
-          identifier: token.identifier,
-          token: token.token,
-        },
-      });
-
-      // await this.tokenRepository
-      //   .createQueryBuilder()
-      //   .insert()
-      //   .into(Token)
-      //   .values([token])
-      //   .orUpdate(['token', 'updateAt'], ['token'])
-      //   .execute();
+      const firebaseStatusDto: FirebaseRegisterStatusDto =
+        await this.firebaseDBService.register(firebseRegisterDto, isRPC);
 
       const outputDto = new RegisterOutputPortDto();
-      outputDto.identifier = result.identifier;
-      outputDto.token = result.token;
-      outputDto.platform = result.platform;
-      outputDto.status = getTokenStatusEnum(result.status);
+      outputDto.identifier = firebaseStatusDto.receiver;
+      outputDto.token = firebaseStatusDto.token;
+      outputDto.platform = firebaseStatusDto.platform;
+      outputDto.tokenStatus = firebaseStatusDto.tokenStatus;
 
       return outputDto;
     } catch (error) {
@@ -101,39 +70,25 @@ export class OutboundService {
   }
 
   async unregister(
-    dto: UnregisterInputPortDto,
+    dto: UnregisterInPortDto,
     isRPC: boolean,
-  ): Promise<UnregisterOutputPortDto[]> {
+  ): Promise<UnregisterOutPortDto> {
     try {
-      const tokens: Token[] = await this.tokenRepository.findBy({
-        identifier: dto.identifier,
-        token: dto.token,
-      });
+      const firebase = dto.firebase;
 
-      const resultTokens: Token[] = await Promise.all(
-        tokens.map(async (token) => {
-          const id = token.id;
-          await this.tokenRepository.update(id, {
-            status: TokenStatus.REVOKED,
-            deleteAt: new Date(),
-          });
-          const result = await this.tokenRepository.findOneOrFail({
-            where: {
-              id: id,
-            },
-          });
-          return result;
-        }),
-      );
+      var firebaseStatusDto: FirebaseUnregisterStatusDto[];
 
-      return resultTokens.map((resultToken) => {
-        const outputDto = new UnregisterOutputPortDto();
-        outputDto.identifier = resultToken.identifier;
-        outputDto.token = resultToken.token;
-        outputDto.platform = resultToken.platform;
-        outputDto.status = resultToken.status;
-        return outputDto;
-      });
+      if (firebase !== null) {
+        firebaseStatusDto = await this.firebaseDBService.unregister(
+          firebase,
+          isRPC,
+        );
+      }
+
+      const outputDto = new UnregisterOutPortDto();
+      outputDto.firebase = firebaseStatusDto;
+
+      return outputDto;
     } catch (error) {
       console.error('Error unregister token:', error);
       throw toException(
@@ -143,135 +98,55 @@ export class OutboundService {
     }
   }
 
-  async findTokenAll(
-    dto: FindTokenInputPortDto,
-    isRPC: boolean,
-  ): Promise<FindTokenOutputPortDto[]> {
-    try {
-      const tokens: Token[] = await this.tokenRepository.findBy({
-        identifier: dto.identifier,
-      });
-
-      return tokens.map((token) => {
-        const dto = new FindTokenOutputPortDto();
-        dto.identifier = token.identifier;
-        dto.token = token.token;
-        dto.platform = getPlatformEnum(token.platform);
-        dto.status = getTokenStatusEnum(token.status);
-        return dto;
-      });
-    } catch (error) {
-      console.error('Error findTokenAll:', error);
-      throw toException(
-        new DatabaseTokenNotFoundException(error.detail),
-        isRPC,
-      );
-    }
-  }
-
   async sendMessage(
-    dto: SendMessageInputPortDto,
+    dto: SendMessageInPortDto,
     isRPC: boolean,
-  ): Promise<SendMessageOutputPortDto[]> {
+  ): Promise<SendMessageOutPortDto> {
     try {
-      // Data Object to String
-      let messageData: string;
-      try {
-        messageData = getMessageDataFrom(dto);
-      } catch (error) {
-        throw new InvalidJSONException(error);
+      const firebase = dto.firebase;
+
+      var firebaseStatusDto: FirebaseMessageStatusDto;
+
+      if (firebase !== null) {
+        firebaseStatusDto = await this.firebaseDBService.sendMessage(
+          firebase,
+          isRPC,
+        );
       }
 
-      // identifier와 token으로 유효한 Token 리스트 가져오기.
-      const tokens: Token[] = await this.getVaildTokensFrom(dto);
+      const outputDto = new SendMessageOutPortDto();
+      outputDto.firebase = firebaseStatusDto;
 
-      // Firebase 처리
-      const messageLogs = await this.firebaseService.processSendMessage(
-        dto,
-        messageData,
-        tokens,
-      );
-
-      // Message Logs 저장
-      await Promise.all(
-        messageLogs.map(async (messageLog) => {
-          await this.messageLogRepository.save(messageLog);
-        }),
-      );
-
-      // Result
-      return messageLogs.map((messageLog) => {
-        const identifier = messageLog.identifier;
-        const token = messageLog.token;
-        const state = messageLog.state;
-
-        const outputDto = new SendMessageOutputPortDto();
-        outputDto.identifier = identifier;
-        outputDto.token = token;
-        outputDto.messageStatus = state;
-
-        return outputDto;
-      });
+      return outputDto;
     } catch (error) {
       console.error('Error sendMessage:', error);
       throw toException(error, isRPC);
     }
   }
 
-  /// Private
+  // async findTokenAll(
+  //   dto: FindTokenInputPortDto,
+  //   isRPC: boolean,
+  // ): Promise<FindTokenOutputPortDto[]> {
+  //   try {
+  //     const tokens: FirebaseToken[] = await this.tokenRepository.findBy({
+  //       identifier: dto.identifier,
+  //     });
 
-  private async setOtherTokenStatusUsed(
-    dto: RegisterInputPortDto,
-  ): Promise<Token[]> {
-    const otherVaildTokens: Token[] = await this.tokenRepository.find({
-      where: [
-        {
-          identifier: Not(dto.identifier),
-          token: dto.token,
-          status: TokenStatus.ISSUED,
-        },
-        {
-          identifier: Not(dto.identifier),
-          token: dto.token,
-          status: TokenStatus.VAILD,
-        },
-      ],
-    });
-    for (const token of otherVaildTokens) {
-      const id = token.id;
-      await this.tokenRepository.update(id, {
-        status: TokenStatus.USED,
-        updateAt: new Date(),
-      });
-    }
-    return otherVaildTokens;
-  }
-
-  private async getVaildTokensFrom(
-    dto: SendMessageInputPortDto,
-  ): Promise<Token[]> {
-    // identifier와 token으로 유효한 Token 리스트 가져오기.
-    const identifier = dto.identifier;
-    const token = dto.token;
-    const tokens: Token[] = await this.tokenRepository.find({
-      where: [
-        {
-          identifier: identifier,
-          token: token,
-          status: TokenStatus.ISSUED,
-        },
-        {
-          identifier: identifier,
-          token: token,
-          status: TokenStatus.VAILD,
-        },
-      ],
-    });
-
-    if (tokens.length == 0) {
-      throw new DatabaseTokenNotFoundException();
-    }
-
-    return tokens;
-  }
+  //     return tokens.map((token) => {
+  //       const dto = new FindTokenOutputPortDto();
+  //       dto.identifier = token.identifier;
+  //       dto.token = token.token;
+  //       dto.platform = getPlatformEnum(token.platform);
+  //       dto.status = getTokenStatusEnum(token.status);
+  //       return dto;
+  //     });
+  //   } catch (error) {
+  //     console.error('Error findTokenAll:', error);
+  //     throw toException(
+  //       new DatabaseTokenNotFoundException(error.detail),
+  //       isRPC,
+  //     );
+  //   }
+  // }
 }

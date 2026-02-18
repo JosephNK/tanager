@@ -3,7 +3,7 @@ import {
   MessageStatus,
   Platform,
   TokenStatus,
-} from '@app/commons';
+} from './commons.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 /// Input Port
@@ -85,7 +85,7 @@ export class RegisterOutputPortDto {
     enum: [...Object.keys(TokenStatus)],
     enumName: 'TokenStatus',
   })
-  status?: TokenStatus;
+  tokenStatus?: TokenStatus;
 }
 
 export class UnregisterOutputPortDto {
@@ -170,34 +170,4 @@ export interface SendPort {
   sendMessage(
     dto: SendMessageInputPortDto,
   ): Promise<SendMessageOutputPortDto[]>;
-}
-
-/// Utils
-/// Data Object to String
-export function getMessageDataFrom(dto: SendMessageInputPortDto): string {
-  const title = dto.title;
-  const message = dto.message;
-  const data = dto.data;
-
-  let messageData: string;
-  try {
-    const defaultData = {
-      title: title,
-      message: message,
-    };
-    if (typeof data === 'string') {
-      messageData = JSON.stringify({
-        ...defaultData,
-        data: JSON.parse(data),
-      });
-    } else {
-      messageData = JSON.stringify({
-        ...defaultData,
-      });
-    }
-  } catch (error) {
-    throw error;
-  }
-
-  return messageData;
 }

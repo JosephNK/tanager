@@ -29,10 +29,14 @@ class ErrorResponse {
 
 @Catch()
 export class TanagerExceptionFilter implements ExceptionFilter {
+  constructor(private readonly logger: MyLoggerService) {}
+
   catch(exception: unknown, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest();
     const response = ctx.getResponse();
+
+    this.logger.error('TanagerExceptionFilter Error', response);
 
     const res =
       exception instanceof BaseException ? exception : new UndefinedException();

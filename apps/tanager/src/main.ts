@@ -3,9 +3,12 @@ import { AppModule } from './app.module';
 import { TanagerExceptionFilter, RpcExceptionFilter } from '@app/exceptions';
 import { TransformInterceptor } from '@app/interceptors';
 import { MyLoggerService, setupSwagger } from '@app/commons';
+import parseUrl from 'parse-url';
 
 async function bootstrap() {
-  const port = process.env.PORT;
+  const uri = process.env.TANAGER_URI;
+  const parseUri = parseUrl(uri);
+  const port = parseUri.port;
 
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
@@ -17,7 +20,7 @@ async function bootstrap() {
 
   // Filters
   app.useGlobalFilters(
-    new TanagerExceptionFilter(),
+    new TanagerExceptionFilter(logger),
     new RpcExceptionFilter(logger),
   );
 
@@ -26,6 +29,8 @@ async function bootstrap() {
 
   setupSwagger(app);
 
-  await app.listen(port);
+  await app.listen(port, () => {
+    console.log(`Tanager Server is listening on port ${port}`);
+  });
 }
 bootstrap();

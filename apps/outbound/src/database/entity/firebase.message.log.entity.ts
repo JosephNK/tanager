@@ -1,22 +1,28 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { TokenStatus, Platform } from '@app/commons';
+import { MessageStatus, Provider } from '@app/commons';
 
 @Entity()
-export class Token extends BaseEntity {
+export class FirebaseMessageLog extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ type: 'varchar' })
-  identifier: string;
+  receiver: string;
 
   @Column({ type: 'varchar' })
   token: string;
 
-  @Column({ type: 'varchar', default: Platform.NONE })
-  platform: Platform;
+  @Column({ type: 'varchar', nullable: true })
+  data: string;
 
-  @Column({ type: 'varchar', default: TokenStatus.ISSUED })
-  status: TokenStatus;
+  @Column({ type: 'varchar', default: Provider.NONE })
+  provider: string;
+
+  @Column({ type: 'varchar', default: MessageStatus.PENDING })
+  state: MessageStatus;
+
+  @Column({ type: 'varchar', nullable: true })
+  errorCode: string;
 
   @Column({ type: 'timestamptz', default: new Date() })
   createAt: Date;

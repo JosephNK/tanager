@@ -7,10 +7,11 @@ export enum ContentTypeExceptionCodeEnum {
 }
 
 export enum RequestDataExceptionCodeEnum {
-  IdentifierNotFound = '20000',
-  TokenNotFound = '20001',
-  MessageNotFound = '20002',
-  InvalidJSON = '20003',
+  ReceiverNotFound = '20000',
+  ProviderNotFound = '20001',
+  TokenNotFound = '20002',
+  MessageNotFound = '20003',
+  InvalidJSON = '20004',
 }
 
 export enum DatabaseExceptionCodeEnum {
@@ -26,7 +27,8 @@ export enum FirebaseExceptionCodeEnum {
 export enum ExceptionErrorMessage {
   Undefined = 'Undefined Error',
   InvalidContentType = 'Invalid Content-Type',
-  IdentifierEmpty = 'Identifier must not be empty',
+  ReceiverEmpty = 'Receiver must not be empty',
+  ProviderEmpty = 'Provider must not be empty',
   TokenEmpty = 'Token must not be empty',
   MessageEmpty = 'Message must not be empty',
   InvalidJSON = 'Invalid JSON Data',

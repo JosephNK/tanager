@@ -1,24 +1,26 @@
-import { Injectable } from '@nestjs/common';
 import {
-  FindTokenOutputPortDto,
-  getPlatformEnum,
   MessageStatus,
-  SendMessageInputPortDto,
-  SendMessageOutputPortDto,
-  UnregisterOutputPortDto,
-} from '@app/commons';
-import {
+  Platform,
+  Provider,
   RegisterInputPortDto,
   RegisterOutputPortDto,
-  UnregisterInputPortDto,
-  FindTokenInputPortDto,
+  TokenStatus,
 } from '@app/commons';
 import {
-  IdentifierNotFoundException,
   MessageNotFoundException,
+  ProviderNotFoundException,
+  ReceiverNotFoundException,
   TokenNotFoundException,
   toException,
 } from '@app/exceptions';
+import { Injectable } from '@nestjs/common';
+import { SendMessageInPortDto } from './models/message.in.port.dto';
+import { SendMessageOutPortDto } from './models/message.out.port.dto';
+import { RegisterOutPortDto } from './models/register.out.port.dto';
+import { TokenInPortDto } from './models/token.in.port.dto';
+import { TokenOutPortDto } from './models/token.out.port.dto';
+import { UnregisterInPortDto } from './models/unregister.in.port.dto';
+import { UnregisterOutPortDto } from './models/unregister.out.port.dto';
 
 /// Service
 @Injectable()
@@ -30,91 +32,110 @@ export class InboundService {
     try {
       const identifier = dto.identifier;
       const token = dto.token;
-      const platform = getPlatformEnum(dto.platform);
+      const platform = dto.platform;
 
-      if (!identifier) {
-        throw toException(new IdentifierNotFoundException(), isRPC);
-      }
-      if (!token) {
-        throw toException(new TokenNotFoundException(), isRPC);
+      if (identifier.length == 0) {
+        throw toException(new ReceiverNotFoundException(), isRPC);
       }
 
-      const outputDto = new RegisterOutputPortDto();
-      outputDto.identifier = identifier;
-      outputDto.token = token;
-      outputDto.platform = platform;
+      const outDto = new RegisterOutputPortDto();
+      outDto.identifier = identifier;
+      outDto.token = token;
+      outDto.platform = platform;
 
-      return outputDto;
+      return outDto;
     } catch (error) {
       throw error;
     }
   }
 
   async unregister(
-    dto: UnregisterInputPortDto,
+    dto: UnregisterInPortDto,
     isRPC: boolean,
-  ): Promise<UnregisterOutputPortDto[]> {
+  ): Promise<UnregisterOutPortDto> {
     try {
-      const identifier = dto.identifier;
-      const token = dto.token;
+      const receiver = dto.receiver;
+      const provider = dto.provider;
+      const optional = dto.optional;
 
-      if (!identifier) {
-        throw toException(new IdentifierNotFoundException(), isRPC);
+      if (receiver.length == 0) {
+        throw toException(new ReceiverNotFoundException(), isRPC);
       }
 
-      const outputDto = new UnregisterOutputPortDto();
-      outputDto.identifier = identifier;
-      outputDto.token = token;
-
-      return [outputDto];
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async findTokenAll(
-    dto: FindTokenInputPortDto,
-    isRPC: boolean,
-  ): Promise<FindTokenOutputPortDto[]> {
-    try {
-      const identifier = dto.identifier;
-
-      if (!identifier) {
-        throw toException(new IdentifierNotFoundException(), isRPC);
+      if (provider === Provider.NONE) {
+        throw toException(new ProviderNotFoundException(), isRPC);
       }
 
-      const outputDto = new FindTokenOutputPortDto();
-      outputDto.identifier = identifier;
-      outputDto.token = '';
+      if (provider === Provider.FIREBASE) {
+        if (!optional || !optional.token) {
+          throw toException(new TokenNotFoundException(), isRPC);
+        }
+      }
 
-      return [outputDto];
+      const outDto = new UnregisterOutPortDto();
+      outDto.receiver = receiver;
+      outDto.provider = provider;
+      outDto.optional = optional;
+
+      return outDto;
     } catch (error) {
       throw error;
     }
   }
 
   async sendMessage(
-    dto: SendMessageInputPortDto,
+    dto: SendMessageInPortDto,
     isRPC: boolean,
-  ): Promise<SendMessageOutputPortDto[]> {
+  ): Promise<SendMessageOutPortDto> {
     try {
-      const identifier = dto.identifier;
-      const token = dto.token;
-      const message = dto.message;
+      const receiver = dto.receiver;
+      const provider = dto.provider;
+      const optional = dto.optional;
 
-      if (!identifier) {
-        throw toException(new IdentifierNotFoundException(), isRPC);
-      }
-      if (!message) {
-        throw toException(new MessageNotFoundException(), isRPC);
+      if (receiver.length == 0) {
+        throw toException(new ReceiverNotFoundException(), isRPC);
       }
 
-      const outputDto = new SendMessageOutputPortDto();
-      outputDto.identifier = identifier;
-      outputDto.token = token;
-      outputDto.messageStatus = MessageStatus.PENDING;
+      if (provider === Provider.NONE) {
+        throw toException(new ProviderNotFoundException(), isRPC);
+      }
 
-      return [outputDto];
+      if (provider === Provider.FIREBASE) {
+        if (!optional || !optional.message) {
+          throw toException(new MessageNotFoundException(), isRPC);
+        }
+      }
+
+      const outDto = new SendMessageOutPortDto();
+      outDto.receiver = receiver;
+      outDto.provider = provider;
+      outDto.optional = optional;
+      outDto.messageStatus = MessageStatus.PENDING;
+
+      return outDto;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findTokenAll(
+    dto: TokenInPortDto,
+    isRPC: boolean,
+  ): Promise<TokenOutPortDto> {
+    try {
+      const receiver = dto.receiver;
+
+      if (receiver.length == 0) {
+        throw toException(new ReceiverNotFoundException(), isRPC);
+      }
+
+      const outDto = new TokenOutPortDto();
+      outDto.receiver = receiver;
+      outDto.optional = null;
+      outDto.platform = Platform.NONE;
+      outDto.tokenStatus = TokenStatus.PENDING;
+
+      return outDto;
     } catch (error) {
       throw error;
     }

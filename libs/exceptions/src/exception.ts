@@ -30,12 +30,22 @@ export class ContentTypeInvalidException extends BaseException {
   }
 }
 
-export class IdentifierNotFoundException extends BaseException {
+export class ReceiverNotFoundException extends BaseException {
   constructor() {
     super(
-      RequestDataExceptionCodeEnum.IdentifierNotFound,
+      RequestDataExceptionCodeEnum.ReceiverNotFound,
       HttpStatus.INTERNAL_SERVER_ERROR,
-      ExceptionErrorMessage.IdentifierEmpty,
+      ExceptionErrorMessage.ReceiverEmpty,
+    );
+  }
+}
+
+export class ProviderNotFoundException extends BaseException {
+  constructor() {
+    super(
+      RequestDataExceptionCodeEnum.ProviderNotFound,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ExceptionErrorMessage.ProviderEmpty,
     );
   }
 }
