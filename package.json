@@ -83,7 +83,13 @@
     "@eslint/plugin-kit": ">=0.3.4",
     "path-to-regexp": ">=8.4.0",
     "brace-expansion": ">=5.0.5",
-    "diff": ">=4.0.4"
+    "diff": ">=4.0.4",
+    "fast-xml-parser": ">=4.5.5",
+    "flatted": ">=3.4.2",
+    "minimatch": ">=10.2.3",
+    "multer": ">=2.1.1",
+    "picomatch": ">=4.0.4",
+    "serialize-javascript": ">=7.0.5"
   },
   "jest": {
     "moduleFileExtensions": [
